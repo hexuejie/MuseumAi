@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="KGk-i7-Jjw" customClass="MUMyCommentCell">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="120"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="119.5"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="S9f-Yp-xyF">
+                        <rect key="frame" x="10" y="36" width="305" height="52.5"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="原文：" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="QIz-My-viY">
+                                <rect key="frame" x="5" y="5" width="50" height="21"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="21" id="KeO-kK-CUm"/>
+                                    <constraint firstAttribute="width" constant="50" id="MWn-BM-Brq"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                <color key="textColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="原文原文原文原文原文原文原文原文原文" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="g7O-CB-gxo">
+                                <rect key="frame" x="55" y="5" width="245" height="36"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="21" id="mFb-zs-Ssm"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                <color key="textColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" red="0.80000000000000004" green="0.80000000000000004" blue="0.80000000000000004" alpha="1" colorSpace="calibratedRGB"/>
+                        <constraints>
+                            <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="g7O-CB-gxo" secondAttribute="bottom" constant="5" id="Fa6-2m-ZFB"/>
+                            <constraint firstAttribute="trailing" secondItem="g7O-CB-gxo" secondAttribute="trailing" constant="5" id="ITl-EH-Lzj"/>
+                            <constraint firstItem="g7O-CB-gxo" firstAttribute="leading" secondItem="QIz-My-viY" secondAttribute="trailing" id="JeK-Xg-vvZ"/>
+                            <constraint firstItem="QIz-My-viY" firstAttribute="leading" secondItem="S9f-Yp-xyF" secondAttribute="leading" constant="5" id="USl-Fy-taS"/>
+                            <constraint firstItem="QIz-My-viY" firstAttribute="top" secondItem="S9f-Yp-xyF" secondAttribute="top" constant="5" id="bh9-ns-tO9"/>
+                            <constraint firstItem="g7O-CB-gxo" firstAttribute="top" secondItem="S9f-Yp-xyF" secondAttribute="top" constant="5" id="pYT-V6-3sb"/>
+                        </constraints>
+                    </view>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="评论：" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="H3l-Hh-LYS">
+                        <rect key="frame" x="15" y="10" width="50" height="21"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="50" id="VCH-JF-7LX"/>
+                            <constraint firstAttribute="height" constant="21" id="oIo-mz-Uay"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                        <color key="textColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="评论评论评论评论评论" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Njo-bG-YFL">
+                        <rect key="frame" x="65" y="10" width="245" height="21"/>
+                        <constraints>
+                            <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="21" id="6IH-Y6-17Q"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                        <color key="textColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="2018-10-15 18:00:00" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="01e-SH-Q0k">
+                        <rect key="frame" x="15" y="93.5" width="295" height="21"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="21" id="dPQ-kQ-KOt"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                        <color key="textColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                </subviews>
+                <constraints>
+                    <constraint firstAttribute="bottom" secondItem="01e-SH-Q0k" secondAttribute="bottom" constant="5" id="1Tp-Op-GsA"/>
+                    <constraint firstAttribute="trailing" secondItem="01e-SH-Q0k" secondAttribute="trailing" constant="10" id="2GO-F1-Nzz"/>
+                    <constraint firstItem="01e-SH-Q0k" firstAttribute="top" secondItem="S9f-Yp-xyF" secondAttribute="bottom" constant="5" id="8WI-Wv-tEx"/>
+                    <constraint firstItem="H3l-Hh-LYS" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="10" id="BVN-Im-n4u"/>
+                    <constraint firstAttribute="trailing" secondItem="S9f-Yp-xyF" secondAttribute="trailing" constant="5" id="Cmg-0l-DfP"/>
+                    <constraint firstItem="S9f-Yp-xyF" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="10" id="Epa-c0-0DL"/>
+                    <constraint firstItem="Njo-bG-YFL" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="10" id="F24-xD-tcA"/>
+                    <constraint firstItem="Njo-bG-YFL" firstAttribute="leading" secondItem="H3l-Hh-LYS" secondAttribute="trailing" id="Fye-vP-F9j"/>
+                    <constraint firstItem="S9f-Yp-xyF" firstAttribute="top" secondItem="Njo-bG-YFL" secondAttribute="bottom" constant="5" id="G2J-AP-hcj"/>
+                    <constraint firstAttribute="trailing" secondItem="Njo-bG-YFL" secondAttribute="trailing" constant="10" id="KHv-AL-EkN"/>
+                    <constraint firstItem="01e-SH-Q0k" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="15" id="Nja-M7-22x"/>
+                    <constraint firstItem="H3l-Hh-LYS" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="15" id="ZXV-ET-RmL"/>
+                </constraints>
+            </tableViewCellContentView>
+            <connections>
+                <outlet property="commentLb" destination="Njo-bG-YFL" id="MOM-OO-N7A"/>
+                <outlet property="timeLb" destination="01e-SH-Q0k" id="KbH-SL-B3C"/>
+                <outlet property="titleBgView" destination="S9f-Yp-xyF" id="IJF-nd-cFT"/>
+                <outlet property="titleLb" destination="g7O-CB-gxo" id="QqX-8t-o1L"/>
+            </connections>
+        </tableViewCell>
+    </objects>
+</document>

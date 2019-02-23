@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="gTV-IL-0wX" customClass="MUExhibitCell">
+            <rect key="frame" x="0.0" y="0.0" width="100" height="100"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="100" height="100"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="1IX-xI-gcC">
+                        <rect key="frame" x="0.0" y="0.0" width="100" height="100"/>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="星空" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oBT-m0-8Rs">
+                        <rect key="frame" x="0.0" y="79" width="100" height="21"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="21" id="gSn-dn-X8G"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                        <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Ufg-PQ-vK7">
+                        <rect key="frame" x="0.0" y="0.0" width="100" height="100"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="查看详情" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="et6-8B-PeC">
+                                <rect key="frame" x="17.5" y="27.5" width="65" height="45"/>
+                                <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="65" id="3jh-ya-lxX"/>
+                                    <constraint firstAttribute="height" constant="45" id="rml-VT-1if"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <color key="highlightedColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="et6-8B-PeC" firstAttribute="centerY" secondItem="Ufg-PQ-vK7" secondAttribute="centerY" id="74t-C3-Xk2"/>
+                            <constraint firstItem="et6-8B-PeC" firstAttribute="centerX" secondItem="Ufg-PQ-vK7" secondAttribute="centerX" id="F3d-ex-TKY"/>
+                        </constraints>
+                    </view>
+                </subviews>
+            </view>
+            <constraints>
+                <constraint firstAttribute="bottom" secondItem="Ufg-PQ-vK7" secondAttribute="bottom" id="Bl4-rq-57F"/>
+                <constraint firstItem="1IX-xI-gcC" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="Kyz-SQ-MqF"/>
+                <constraint firstAttribute="trailing" secondItem="1IX-xI-gcC" secondAttribute="trailing" id="MiP-D0-vmU"/>
+                <constraint firstItem="1IX-xI-gcC" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="ZbC-O4-huJ"/>
+                <constraint firstItem="Ufg-PQ-vK7" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="ZoZ-q9-BKG"/>
+                <constraint firstAttribute="trailing" secondItem="oBT-m0-8Rs" secondAttribute="trailing" id="dQD-gm-oQa"/>
+                <constraint firstAttribute="trailing" secondItem="Ufg-PQ-vK7" secondAttribute="trailing" id="dpS-2h-hN3"/>
+                <constraint firstItem="oBT-m0-8Rs" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="hdc-sm-NTx"/>
+                <constraint firstItem="Ufg-PQ-vK7" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="nWt-Wx-xRu"/>
+                <constraint firstAttribute="bottom" secondItem="1IX-xI-gcC" secondAttribute="bottom" id="rto-aT-2l8"/>
+                <constraint firstAttribute="bottom" secondItem="oBT-m0-8Rs" secondAttribute="bottom" id="xxq-T1-dtT"/>
+            </constraints>
+            <connections>
+                <outlet property="detailBgView" destination="Ufg-PQ-vK7" id="4It-30-q1O"/>
+                <outlet property="detailLb" destination="et6-8B-PeC" id="Pc1-Ax-Ozp"/>
+                <outlet property="exhibitImageView" destination="1IX-xI-gcC" id="LWm-Jw-jhE"/>
+                <outlet property="exhibitNameLb" destination="oBT-m0-8Rs" id="aGS-T4-ZeK"/>
+            </connections>
+        </collectionViewCell>
+    </objects>
+</document>

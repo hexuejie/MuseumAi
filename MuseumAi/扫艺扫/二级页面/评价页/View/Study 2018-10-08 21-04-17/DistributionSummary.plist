@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Study.ipa</key>
+	<array>
+		<dict>
+			<key>architectures</key>
+			<array>
+				<string>armv7</string>
+				<string>arm64</string>
+			</array>
+			<key>certificate</key>
+			<dict>
+				<key>SHA1</key>
+				<string>4F7714822B4068842D0205EFC3B8F902CEAED88D</string>
+				<key>dateExpires</key>
+				<string>2019/9/3</string>
+				<key>type</key>
+				<string>iOS Distribution</string>
+			</dict>
+			<key>entitlements</key>
+			<dict>
+				<key>application-identifier</key>
+				<string>WTH37R9ZDY.com.himuseum.tcsz.museumai</string>
+				<key>com.apple.developer.team-identifier</key>
+				<string>WTH37R9ZDY</string>
+				<key>get-task-allow</key>
+				<false/>
+				<key>keychain-access-groups</key>
+				<array>
+					<string>WTH37R9ZDY.com.himuseum.tcsz.museumai</string>
+				</array>
+			</dict>
+			<key>name</key>
+			<string>Study.app</string>
+			<key>profile</key>
+			<dict>
+				<key>UUID</key>
+				<string>006d2ff7-03c7-4880-89d6-f670168900b8</string>
+				<key>name</key>
+				<string>iOS Team Ad Hoc Provisioning Profile: com.himuseum.tcsz.museumai</string>
+			</dict>
+			<key>team</key>
+			<dict>
+				<key>id</key>
+				<string>WTH37R9ZDY</string>
+				<key>name</key>
+				<string>Zeyu Ma</string>
+			</dict>
+		</dict>
+	</array>
+</dict>
+</plist>

@@ -10,6 +10,7 @@
 
 @interface MUSearchCollectionCell : UICollectionViewCell
 
+@property (strong, nonatomic) UIImageView *searchIcon;
 @property (strong, nonatomic) UILabel *textLabel;
 
 @end

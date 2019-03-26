@@ -45,19 +45,19 @@
     
 }
 
-#define Line3Height 70.0f
+#define Line3Height 115.0f
 
 - (void)loadLayoutData {
     
-    CGFloat totalHeight = [MULayoutHandler caculateHeightWithContent:self.exhibitionIntroduce font:15.0f width:SCREEN_WIDTH-25.0f];
+    CGFloat totalHeight = [self cellHeightWithMsg:self.exhibitionIntroduce];
     if (totalHeight < Line3Height) {
         _foldEnable = NO;
         _fold = NO;
-        _introduceHeight = totalHeight+10.0f;
+        _introduceHeight = totalHeight+10.0f  +20;//+16;
     }else {
         _foldEnable = YES;
         _fold = NO;
-        _introduceHeight = Line3Height+10.0f+20.0f;
+        _introduceHeight = Line3Height+10.0f+20.0f +19;
     }
     
 }
@@ -68,10 +68,21 @@
     }
     _fold = fold;
     if (_fold) {
-        _introduceHeight = [MULayoutHandler caculateHeightWithContent:self.exhibitionIntroduce font:15.0f width:SCREEN_WIDTH-25.0f]+30.0f;
+        _introduceHeight = [self cellHeightWithMsg:self.exhibitionIntroduce] +30.0f +19;
+//        [MULayoutHandler caculateHeightWithContent:self.exhibitionIntroduce font:15.0f width:SCREEN_WIDTH-30.0f];
     }else {
-        _introduceHeight = Line3Height+30.0f;
+        _introduceHeight = Line3Height+30.0f +18;
     }
+}
+
+- (CGFloat)cellHeightWithMsg:(NSString *)msg
+{
+    UILabel *label = [[UILabel alloc] init];
+    label.text = msg;
+    label.font = [UIFont systemFontOfSize:15];
+    label.numberOfLines = 0;
+    CGSize size = [label sizeThatFits:CGSizeMake(SCREEN_WIDTH-30, CGFLOAT_MAX)];
+    return size.height +20;
 }
 
 

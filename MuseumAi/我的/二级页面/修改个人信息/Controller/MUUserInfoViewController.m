@@ -12,12 +12,13 @@
 #import "MUUserIconCell.h"
 #import "MUUserInfoCell.h"
 #import "WSDatePickerView.h"
+#import "MUUserInfoFixViewController.h"
 
-typedef NS_ENUM(NSInteger, MUALERTTYPE) {
-    MUALERTTYPENICKNAME = 0,    // 昵称
-    MUALERTTYPEEAMAIL,          // 邮箱
-    MUALERTTYPEJOB              // 职业
-};
+//typedef NS_ENUM(NSInteger, MUALERTTYPE) {
+//    MUALERTTYPENICKNAME = 0,    // 昵称
+//    MUALERTTYPEEAMAIL,          // 邮箱
+//    MUALERTTYPEJOB              // 职业
+//};
 
 @interface MUUserInfoViewController ()<UITableViewDelegate,UITableViewDataSource,YMSPhotoPickerViewControllerDelegate>
 
@@ -50,6 +51,7 @@ typedef NS_ENUM(NSInteger, MUALERTTYPE) {
 /** 输入类型 */
 @property (nonatomic , assign) MUALERTTYPE inputType;
 
+@property (nonatomic , strong) MUUserInfoCell *tempCell;
 @end
 
 @implementation MUUserInfoViewController
@@ -62,9 +64,14 @@ typedef NS_ENUM(NSInteger, MUALERTTYPE) {
     [self dataInit];
 }
 
+- (void)viewWillAppear:(BOOL)animated{
+    [super viewWillAppear:animated];
+    [self reloadUserInfo];
+}
+
 - (void)viewInit {
     
-    self.topConstraint.constant = SafeAreaTopHeight-44.0f;
+    self.topConstraint.constant = SafeAreaTopHeight-36.0f;
     
     [self.returnBt setImageEdgeInsets:UIEdgeInsetsMake(5, 5, 5, 5)];
     
@@ -144,6 +151,7 @@ typedef NS_ENUM(NSInteger, MUALERTTYPE) {
         return cell;
     }else {
         MUUserInfoCell *cell = [tableView dequeueReusableCellWithIdentifier:@"MUUserInfoCell"];
+        cell.sexChooseView.hidden = YES;
         switch (indexPath.row) {
             case 0:
                 cell.infoTitleLb.text = @"昵称";
@@ -151,7 +159,22 @@ typedef NS_ENUM(NSInteger, MUALERTTYPE) {
                 break;
             case 1:
                 cell.infoTitleLb.text = @"性别";
-                cell.infoContentLb.text = [MUUserModel currentUser].genderDescripe;
+                cell.sexChooseView.hidden = NO;
+                if ([[MUUserModel currentUser].genderDescripe isEqualToString:@"男"]) {
+                    cell.manButton.selected = YES;
+                    cell.womanButton.selected = NO;
+                    cell.womanButton.layer.borderColor = kUIColorFromRGB(0xDCDCDC).CGColor;
+                    cell.manButton.layer.borderColor = kMainColor.CGColor;
+                    
+                }else if([[MUUserModel currentUser].genderDescripe isEqualToString:@"女"]) {
+                    cell.manButton.selected = NO;
+                    cell.womanButton.selected = YES;
+                    cell.manButton.layer.borderColor = kUIColorFromRGB(0xDCDCDC).CGColor;
+                    cell.womanButton.layer.borderColor = kMainColor.CGColor;
+                }
+                self.tempCell = cell;
+                [cell.manButton addTarget:self action:@selector(chooseManClick:) forControlEvents:UIControlEventTouchUpInside];
+                [cell.womanButton addTarget:self action:@selector(chooseWomanClick:) forControlEvents:UIControlEventTouchUpInside];
                 break;
             case 2:
                 cell.infoTitleLb.text = @"生日";
@@ -173,18 +196,42 @@ typedef NS_ENUM(NSInteger, MUALERTTYPE) {
     
 }
 
+- (void)chooseManClick:(UIButton *)sender{
+    [self updateGenderWithStr:@"1"];
+    if (self.tempCell) {
+        MUUserInfoCell *cell = [self.infoTableView dequeueReusableCellWithIdentifier:@"MUUserInfoCell" forIndexPath:[NSIndexPath indexPathForRow:1 inSection:1]];
+        cell.manButton.selected = YES;
+        cell.womanButton.selected = NO;
+        cell.manButton.layer.borderColor = kUIColorFromRGB(0xDCDCDC).CGColor;
+        cell.womanButton.layer.borderColor = kMainColor.CGColor;
+    }
+}
+- (void)chooseWomanClick:(UIButton *)sender{
+    [self updateGenderWithStr:@"2"];
+    if (self.tempCell) {
+        MUUserInfoCell *cell = [self.infoTableView dequeueReusableCellWithIdentifier:@"MUUserInfoCell" forIndexPath:[NSIndexPath indexPathForRow:1 inSection:1]];
+        cell.manButton.selected = NO;
+        cell.womanButton.selected = YES;
+        cell.womanButton.layer.borderColor = kUIColorFromRGB(0xDCDCDC).CGColor;
+        cell.manButton.layer.borderColor = kMainColor.CGColor;
+    }
+}
+
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     switch (indexPath.section) {
         case 0:
-            return 60.0f;
+            return 85.0f;
             break;
         default:
-            return 44.0f;
+            return 50.0f;
             break;
     }
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+    if(section ==0){
+        return 0.01;
+    }
     return 10.0f;
 }
 
@@ -198,28 +245,32 @@ typedef NS_ENUM(NSInteger, MUALERTTYPE) {
         switch (indexPath.row) {
             case 0: {
                 self.inputType = MUALERTTYPENICKNAME;
-                self.inputTextField.keyboardType = UIKeyboardTypeDefault;
-                self.inputTextField.text = [MUUserModel currentUser].nikeName;
-                [self.inputTextField becomeFirstResponder];
-                self.inputAlertBgView.hidden = NO;
+//                self.inputTextField.keyboardType = UIKeyboardTypeDefault;
+//                self.inputTextField.text = [MUUserModel currentUser].nikeName;
+//                [self.inputTextField becomeFirstResponder];
+//                self.inputAlertBgView.hidden = NO;
+                MUUserInfoFixViewController *fixVC = [MUUserInfoFixViewController new];
+                fixVC.titleLabelView.text = @"设置昵称";
+                fixVC.inputType = MUALERTTYPENICKNAME;
+                [self.navigationController pushViewController:fixVC animated:YES];
                 break;
             }
             case 1: {
-                NSInteger genderIndex = [[MUUserModel currentUser].gender integerValue];
-                if (genderIndex == 1) { // 男
-                    self.maleBt.selected = YES;
-                    self.femaleBt.selected = NO;
-                    self.scretBt.backgroundColor = kUIColorFromRGB(0xe8e8e8);
-                }else if(genderIndex == 2) {    // 女
-                    self.maleBt.selected = NO;
-                    self.femaleBt.selected = YES;
-                    self.scretBt.backgroundColor = kUIColorFromRGB(0xe8e8e8);
-                }else { // 保密
-                    self.maleBt.selected = NO;
-                    self.femaleBt.selected = NO;
-                    self.scretBt.backgroundColor = kMainColor;
-                }
-                self.genderSelectView.hidden = NO;
+//                NSInteger genderIndex = [[MUUserModel currentUser].gender integerValue];
+//                if (genderIndex == 1) { // 男
+//                    self.maleBt.selected = YES;
+//                    self.femaleBt.selected = NO;
+//                    self.scretBt.backgroundColor = kUIColorFromRGB(0xe8e8e8);
+//                }else if(genderIndex == 2) {    // 女
+//                    self.maleBt.selected = NO;
+//                    self.femaleBt.selected = YES;
+//                    self.scretBt.backgroundColor = kUIColorFromRGB(0xe8e8e8);
+//                }else { // 保密
+//                    self.maleBt.selected = NO;
+//                    self.femaleBt.selected = NO;
+//                    self.scretBt.backgroundColor = kMainColor;
+//                }
+//                self.genderSelectView.hidden = NO;
                 break;
             }
             case 2: {
@@ -237,19 +288,29 @@ typedef NS_ENUM(NSInteger, MUALERTTYPE) {
                 break;
             }
             case 3: {
-                self.inputType = MUALERTTYPEEAMAIL;
-                self.inputTextField.keyboardType = UIKeyboardTypeEmailAddress;
-                self.inputTextField.text = [MUUserModel currentUser].email;
-                [self.inputTextField becomeFirstResponder];
-                self.inputAlertBgView.hidden = NO;
+//                self.inputType = MUALERTTYPEEAMAIL;
+//                self.inputTextField.keyboardType = UIKeyboardTypeEmailAddress;
+//                self.inputTextField.text = [MUUserModel currentUser].email;
+//                [self.inputTextField becomeFirstResponder];
+//                self.inputAlertBgView.hidden = NO;
+                
+                MUUserInfoFixViewController *fixVC = [MUUserInfoFixViewController new];
+                fixVC.titleLabelView.text = @"设置邮箱";
+                fixVC.inputType = MUALERTTYPEEAMAIL;
+                [self.navigationController pushViewController:fixVC animated:YES];
                 break;
             }
             case 4: {
-                self.inputType = MUALERTTYPEJOB;
-                self.inputTextField.keyboardType = UIKeyboardTypeDefault;
-                self.inputTextField.text = [MUUserModel currentUser].occupation;
-                [self.inputTextField becomeFirstResponder];
-                self.inputAlertBgView.hidden = NO;
+//                self.inputType = MUALERTTYPEJOB;
+//                self.inputTextField.keyboardType = UIKeyboardTypeDefault;
+//                self.inputTextField.text = [MUUserModel currentUser].occupation;
+//                [self.inputTextField becomeFirstResponder];
+//                self.inputAlertBgView.hidden = NO;
+                
+                MUUserInfoFixViewController *fixVC = [MUUserInfoFixViewController new];
+                fixVC.titleLabelView.text = @"设置职业";
+                fixVC.inputType = MUALERTTYPEJOB;
+                [self.navigationController pushViewController:fixVC animated:YES];
                 break;
             }
             default:
@@ -461,6 +522,7 @@ typedef NS_ENUM(NSInteger, MUALERTTYPE) {
         if ([result[@"state"]integerValue] == 10001) {
             [MUUserModel currentUser].gender = gender;
             [weakSelf.infoTableView reloadData];
+            
         }else {
             [weakSelf alertWithMsg:result[@"msg"] handler:nil];
         }

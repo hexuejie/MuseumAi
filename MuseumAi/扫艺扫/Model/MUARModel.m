@@ -13,15 +13,14 @@
 + (instancetype)exhibitsARModel:(NSDictionary *)dic {
     
     MUARModel *model = [MUARModel new];
-    
     model.exhibitsId = dic[@"exhibitsId"];
     model.videoUrl = dic[@"vrFileUrl"];
     if(model.videoUrl == nil) {
         model.type = ExhibitsARTypeNone;
     }else {
-        model.type = [dic[@"type"]integerValue];
+        model.type = ExhibitsARTypePop;
     }
-    model.imageUrls = dic[@"filePath"];
+    model.vuforiaIDs = dic[@"GTid"];
     
     return model;
     

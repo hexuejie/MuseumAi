@@ -15,7 +15,7 @@
     
     self.selectionStyle = UITableViewCellSelectionStyleNone;
     self.iconImageView.layer.masksToBounds = YES;
-    self.iconImageView.layer.cornerRadius = 22.0f;
+    self.iconImageView.layer.cornerRadius = 30.0f;
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {

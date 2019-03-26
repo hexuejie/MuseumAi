@@ -1,0 +1,39 @@
+{
+  "msg" : "请求成功",
+  "data" : [
+    {
+      "hallExhibitsList" : [
+        {
+          "regionId" : "3e866d34273941d2b4bfabbd21ef45ee",
+          "positionX" : "124",
+          "bluetoothName" : "guanqu_00792",
+          "exhibitsName" : "MuseumAI",
+          "exhibitsSurfacePlotUrl" : "https://down.airart.com.cn/arsjimage/exhibitsSurfacePlotUrl/izBjFPDcf8.png",
+          "positionY" : "149",
+          "bluetoothId" : "FDA50693-A4E2-4FB1-AFCF-C6EB07647825",
+          "exhibitsId" : "ea7c2c5699f7482fa5e5f93e0c71486c",
+          "audioType" : 1,
+          "audio" : "https://down.airart.com.cn/arsjimage/fileUrl/d3Neh3mARS.mp3"
+        },
+        {
+          "regionId" : "3e866d34273941d2b4bfabbd21ef45ee",
+          "audio" : "https://down.airart.com.cn/arsjimage/fileUrl/7n7wCNBw2C.mp3",
+          "positionX" : "124",
+          "bluetoothName" : "guanqu_00794",
+          "exhibitsName" : "欢迎语",
+          "exhibitsSurfacePlotUrl" : "https://down.airart.com.cn/arsjimage/exhibitsSurfacePlotUrl/nepc3HYFRi.jpg",
+          "positionY" : "149",
+          "bluetoothId" : "FDA50693-A4E2-4FB1-AFCF-C6EB07647826",
+          "exhibitsId" : "ea7c2c5699f7482fa5e5f93e0c714861",
+          "exhibitsVrVideoUrl" : "",
+          "audioType" : 0
+        }
+      ],
+      "id" : "3e866d34273941d2b4bfabbd21ef45ee",
+      "regionName" : "测试展区",
+      "regionPlanePicUrl" : "https://down.airart.com.cn/arsjimage/regionPlanePicUrl/NSer2wRJCw.jpeg",
+      "sortIndex" : 0
+    }
+  ],
+  "state" : 10001
+}

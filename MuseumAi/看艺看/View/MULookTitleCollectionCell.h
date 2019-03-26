@@ -11,5 +11,6 @@
 @interface MULookTitleCollectionCell : UICollectionViewCell
 
 @property (weak, nonatomic) IBOutlet UILabel *titleNameLabel;
+@property (weak, nonatomic) IBOutlet UIView *tagLineView;
 
 @end

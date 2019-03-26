@@ -20,7 +20,7 @@
     lb.font = [UIFont systemFontOfSize:font];
     [lb sizeToFit];
     CGFloat height = lb.frame.size.height;
-    return height+10.0f;
+    return height+15.0f;
 }
 
 + (CGFloat)caculateWidthWithContent:(NSString *)content

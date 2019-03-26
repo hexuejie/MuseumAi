@@ -10,13 +10,15 @@
 #import "MURegionModel.h"
 #import "MUExhibitDetailViewController.h"
 #import "ZACCollectionFlowLayout.h"
+#import "MUAlertView.h"
 
 #import "MUFloorCell.h"
 #import "MUExhibitCell.h"
 
 @interface MUGuideViewController ()<UICollectionViewDataSource,UICollectionViewDelegateFlowLayout>
 
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *topConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *topHeightConstraint;
+
 @property (weak, nonatomic) IBOutlet UIButton *returnBt;
 @property (weak, nonatomic) IBOutlet UIImageView *hallImageView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *hallImageHeightConstraint;
@@ -24,6 +26,7 @@
 @property (weak, nonatomic) IBOutlet UICollectionView *floorCollectionView;
 @property (weak, nonatomic) IBOutlet UICollectionView *hotExhibitsCollectionView;
 @property (weak, nonatomic) IBOutlet UICollectionView *allExhibitsCollectionView;
+
 
 /** 导航mask */
 @property (nonatomic , strong) UIView *guideView;
@@ -35,7 +38,8 @@
 @property (nonatomic , assign) NSInteger currentHotIndex;
 @property (nonatomic , assign) NSInteger currentAllIndex;
 
-@property (strong, nonatomic) IBOutlet UIView *guideAlertBgView;
+/* 弹窗 */
+@property(nonatomic, strong) MUAlertView *guideAlertBgView;
 @property (weak, nonatomic) IBOutlet UIView *guideAlertView;
 @property (weak, nonatomic) IBOutlet UIImageView *guideImageView;
 @property (weak, nonatomic) IBOutlet UILabel *guideLabel;
@@ -53,7 +57,7 @@
 
 - (void)viewInit {
     
-    self.topConstraint.constant = SafeAreaTopHeight-44.0f;
+    self.topHeightConstraint.constant = SafeAreaTopHeight;
     [self.view bringSubviewToFront:self.returnBt];
     [self.returnBt setImageEdgeInsets:UIEdgeInsetsMake(13.5, 13.5, 13.5, 13.5)];
     
@@ -90,15 +94,21 @@
     [self.allExhibitsCollectionView registerNib:[UINib nibWithNibName:@"MUExhibitCell" bundle:[NSBundle mainBundle]] forCellWithReuseIdentifier:@"MUExhibitCell"];
     self.allExhibitsCollectionView.showsHorizontalScrollIndicator = NO;
     
-    self.guideAlertBgView.frame = SCREEN_BOUNDS;
-    self.guideAlertBgView.backgroundColor = [[UIColor blackColor]colorWithAlphaComponent:0.3];
+    // 弹窗初始化
+    self.guideAlertBgView = [MUAlertView alertViewWithSize:CGSizeMake(SCREEN_WIDTH - 100.0f, 400.0f)];
     [self.view addSubview:self.guideAlertBgView];
     self.guideAlertBgView.hidden = YES;
-    self.guideAlertView.layer.cornerRadius = 5.0f;
-    self.guideAlertView.layer.masksToBounds = YES;
-    [self.guideAlertView bringSubviewToFront:self.guideLabel];
-    self.guideLabel.backgroundColor = [[UIColor blackColor]colorWithAlphaComponent:0.5f];
-    self.guideLabel.textColor = [UIColor whiteColor];
+    
+    [self.guideAlertBgView.contentView addSubview:self.guideAlertView];
+    self.guideAlertView.backgroundColor = [UIColor clearColor];
+    [self.guideAlertView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.mas_equalTo(15.0f);
+        make.bottom.mas_equalTo(5.0f);
+        make.left.mas_equalTo(20.0f);
+        make.right.mas_equalTo(-20.0f);
+    }];
+    self.guideLabel.backgroundColor = [UIColor clearColor];
+    self.guideLabel.textColor = kUIColorFromRGB(0x333333);
     [self.guideAlertBgView addTapTarget:self action:@selector(hideGuideAlert)];
 }
 
@@ -229,8 +239,9 @@
     self.guideAlertBgView.hidden = NO;
     __weak typeof(self) weakSelf = self;
     [self.guideImageView sd_setImageWithURL:[NSURL URLWithString:exhibit.exhibitUrl] placeholderImage:kPlaceHolderImage completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
-        CGFloat height = (SCREEN_WIDTH-40.0f) * image.size.height/image.size.width;
+        CGFloat height = (SCREEN_WIDTH-100.0f) * image.size.height/image.size.width;
         weakSelf.guideAlertHeight.constant = height;
+        weakSelf.guideAlertBgView.contentSize = CGSizeMake(SCREEN_WIDTH, height+20.0f);
     }];
     self.guideLabel.text = exhibit.exhibitName;
 }
@@ -270,7 +281,7 @@
         MUFloorCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"MUFloorCell" forIndexPath:indexPath];
         cell.floorLb.text = [NSString stringWithFormat:@"%ldF",indexPath.item+1];
         if (indexPath.item == self.currentFloor) {
-            cell.floorLb.backgroundColor = kUIColorFromRGB(0x666666);
+            cell.floorLb.backgroundColor = kMainColor;
         }else {
             cell.floorLb.backgroundColor = kUIColorFromRGB(0x999999);
         }
@@ -371,9 +382,10 @@
 
 - (void)addExhibitGuideMask {
     
-    CGRect rect = CGRectMake(15, self.topConstraint.constant+45+10+self.hallImageHeightConstraint.constant+44.0f+10.0f+44.0f, 120.0f, 100.0f);
+    CGRect rect = CGRectMake(15, self.topHeightConstraint.constant+10.0f+self.hallImageHeightConstraint.constant+44.0f+10.0f+44.0f, 120.0f, 100.0f);
     if (self.hotExhibits.count == 0) {
-        rect = CGRectMake(15, self.topConstraint.constant+45+10+self.hallImageHeightConstraint.constant+44.0f+10.0f+44.0f+100.0f+44.0f, 120.0f, 100.0f);
+        /** 如果没有热门展品，就定位到全部展品的第一个 */
+        rect = CGRectMake(15, self.topHeightConstraint.constant+10+self.hallImageHeightConstraint.constant+44.0f+10.0f+44.0f+100.0f+44.0f, 120.0f, 100.0f);
     }
     UIBezierPath *tempPath = [UIBezierPath bezierPathWithRoundedRect:rect byRoundingCorners:(UIRectCornerTopLeft |UIRectCornerTopRight |UIRectCornerBottomRight|UIRectCornerBottomLeft) cornerRadii:CGSizeMake(4, 4)];
     UIView *guideView = [[UIView alloc] initWithFrame:SCREEN_BOUNDS];

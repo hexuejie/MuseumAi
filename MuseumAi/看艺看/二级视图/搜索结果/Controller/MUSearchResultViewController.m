@@ -15,6 +15,7 @@
 @interface MUSearchResultViewController ()<UITableViewDelegate, UITableViewDataSource>
 
 
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *navHeight;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *topConstraint;
 
 @property (weak, nonatomic) IBOutlet UIButton *returnBt;
@@ -42,9 +43,10 @@
 - (void)viewInit {
     
     self.topConstraint.constant = SafeAreaTopHeight-44.0f;
-    
+    self.navHeight.constant = SafeAreaTopHeight;
     [self.returnBt setImageEdgeInsets:UIEdgeInsetsMake(5, 5, 5, 5)];
     
+    self.resultTbView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.resultTbView.tableFooterView = [UIView new];
     [self.resultTbView registerNib:[UINib nibWithNibName:@"MUExhibitionTableCell" bundle:[NSBundle mainBundle]] forCellReuseIdentifier:@"MUExhibitionTableCell"];
     

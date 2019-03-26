@@ -11,6 +11,8 @@
 
 @interface MUHallCell : UITableViewCell
 
-- (void)bindCellWith:(MUHallModel *)hall positionTappedBlock:(void(^)(void))block;
+- (void)bindCellWith:(MUHallModel *)hall
+     positionHandler:(void(^)(void))positionHandler
+     downloadHandler:(void(^)(void))downloadHandler;
 
 @end

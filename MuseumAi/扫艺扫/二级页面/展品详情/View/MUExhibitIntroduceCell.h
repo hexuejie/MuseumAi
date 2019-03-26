@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "MUExhibitModel.h"
 
-#define kExhibitIntroduceBaseHeight 50.0f
+#define kExhibitIntroduceBaseHeight 60.0f
 
 @interface MUExhibitIntroduceCell : UITableViewCell
 

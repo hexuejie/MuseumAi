@@ -12,6 +12,8 @@
 
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *topConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *navHeight;
+
 
 @property (weak, nonatomic) IBOutlet UIButton *returnBt;
 
@@ -21,7 +23,8 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.topConstraint.constant = SafeAreaTopHeight-44.0f;
+    self.topConstraint.constant = SafeAreaTopHeight-36.0f;
+    self.navHeight.constant = SafeAreaTopHeight;
     [self.returnBt setImageEdgeInsets:UIEdgeInsetsMake(5, 5, 5, 5)];
 }
 

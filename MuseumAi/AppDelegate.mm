@@ -7,8 +7,8 @@
 //
 
 #import "AppDelegate.h"
-#import <easyar/engine.oc.h>
 #import "WXApi.h"
+#import <TencentOpenAPI/TencentOAuth.h>
 #import <AVFoundation/AVFoundation.h>
 
 #import "MULookViewController.h"
@@ -18,11 +18,19 @@
 #import "MUStartViewController.h"
 #import "MUActivityViewController.h"
 
-@interface AppDelegate ()<BMKGeneralDelegate,BMKLocationAuthDelegate,WXApiDelegate>
+typedef void(^LoginHandler)(NSString *errorMsg, NSDictionary *response);
+
+@interface AppDelegate ()<BMKGeneralDelegate,BMKLocationAuthDelegate,WXApiDelegate, TencentSessionDelegate>
 {
     BMKMapManager *_mapManager;
     UIBackgroundTaskIdentifier taskId;
 }
+
+/* 腾讯授权 */
+@property(nonatomic, strong) TencentOAuth *tencentOAuth;
+/* 登录后回调 */
+@property(nonatomic, copy) LoginHandler handler;
+
 @end
 
 @implementation AppDelegate
@@ -30,11 +38,18 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
-    if (![easyar_Engine initialize:EasyARKey]) {
-        NSLog(@"Initialization Failed.");
-    }
+//    if (![easyar_Engine initialize:EasyARKey]) {
+//        NSLog(@"Initialization Failed.");
+//    }
     [self BaiduMapInit];
-    [WXApi registerApp:WEIXINKEY];
+    BOOL registerWX = [WXApi registerApp:WEIXINKEY];
+    if (registerWX) {
+        NSLog(@"微信注册成功");
+    } else {
+        NSLog(@"微信注册失败");
+    }
+    
+    _tencentOAuth = [[TencentOAuth alloc] initWithAppId:QQAppID andDelegate:self];
     
     self.window = [[UIWindow alloc]initWithFrame:SCREEN_BOUNDS];
 //    [self tabBarInit];
@@ -58,6 +73,12 @@
 //    [[NSUserDefaults standardUserDefaults] setObject:@"" forKey:@"help_guide"];
 //    [[NSUserDefaults standardUserDefaults] setObject:@"" forKey:@"guide_guide"];
 //    [[NSUserDefaults standardUserDefaults] setObject:@"" forKey:@"exhibit_guide"];
+#ifdef MUSimulatorTest
+    [[NSUserDefaults standardUserDefaults] setObject:@"1" forKey:@"scan_guide"];
+    [[NSUserDefaults standardUserDefaults] setObject:@"1" forKey:@"help_guide"];
+    [[NSUserDefaults standardUserDefaults] setObject:@"1" forKey:@"guide_guide"];
+    [[NSUserDefaults standardUserDefaults] setObject:@"1" forKey:@"exhibit_guide"];
+#endif
 }
 
 - (void)setLaunchScreen {
@@ -117,9 +138,9 @@
     tabBar.viewControllers = @[lookNav, scanNav, shopNav, mineNav];
     
     //未选中字体颜色
-    [[UITabBarItem appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName:kUIColorFromRGB(0x333333),NSFontAttributeName:[UIFont systemFontOfSize:12.0f]} forState:UIControlStateNormal];
+    [[UITabBarItem appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName:kUIColorFromRGB(0x7C7C7C),NSFontAttributeName:[UIFont systemFontOfSize:11.0f]} forState:UIControlStateNormal];
     //选中字体颜色
-    [[UITabBarItem appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName:kUIColorFromRGB(0x259ADB),NSFontAttributeName:[UIFont systemFontOfSize:12.0f]} forState:UIControlStateSelected];
+    [[UITabBarItem appearance] setTitleTextAttributes:@{NSForegroundColorAttributeName:kMainColor,NSFontAttributeName:[UIFont systemFontOfSize:11.0f]} forState:UIControlStateSelected];
     
     [lookNav.tabBarItem setImage:[[UIImage imageNamed:@"看艺看"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
     [lookNav.tabBarItem setSelectedImage:[[UIImage imageNamed:@"看艺看选中"]imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
@@ -191,13 +212,30 @@
         NSLog(@"授权失败：%d", iError);
     }
 }
-
+/*
 - (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url {
     return [WXApi handleOpenURL:url delegate:self];
 }
 - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url sourceApplication:(NSString *)sourceApplication annotation:(id)annotation {
     return [WXApi handleOpenURL:url delegate:self];
 }
+*/
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+    NSString *sourceApplication = options[@"UIApplicationOpenURLOptionsSourceApplicationKey"];
+    NSLog(@"sourceApplication:%@",sourceApplication);
+    if([sourceApplication containsString:@"com.tencent.xin"] ||
+       [sourceApplication containsString:@"weixin"]) {
+        return [WXApi handleOpenURL:url delegate:self];
+    } else if ([sourceApplication containsString:@"tencent"] ||
+               [sourceApplication containsString:@"qq"] ||
+               [sourceApplication containsString:@"mqzone"] ||
+               [sourceApplication containsString:@"mtt"]) {
+        return [TencentOAuth HandleOpenURL:url];
+    } else {
+        return YES;
+    }
+}
+
 #pragma mark 微信回调方法
 - (void)onResp:(BaseResp *)resp {
     if ([resp isKindOfClass:[SendAuthResp class]]) {
@@ -212,8 +250,77 @@
     
 }
 
+#pragma mark ---- qq登录回调
+- (void)loginByQQ:(void (^)(NSString *errorMsg, NSDictionary *response))handler {
+    _handler = handler;
+    [_tencentOAuth authorize:@[@"get_user_info",@"get_simple_userinfo",@"add_t"] inSafari:NO];
+}
+/**
+ * 登录成功后的回调
+ */
+- (void)tencentDidLogin {
+    NSLog(@"登录完成");
+    if (_tencentOAuth.accessToken.length > 0) {
+        BOOL result = [_tencentOAuth getUserInfo];
+        if (!result) {
+            if (self.handler) {
+                self.handler(@"获取用户信息失败", nil);
+            }
+        }
+    } else {
+        if (self.handler) {
+            self.handler(@"登录失败", nil);
+        }
+    }
+    
+}
+
+- (void)getUserInfoResponse:(APIResponse*)response{
+    
+    NSString *openID = [_tencentOAuth getUserOpenID];
+    NSString *imageUrl = response.jsonResponse[@"figureurl_qq"];
+    NSString *sex = response.jsonResponse[@"gender"];
+    NSString *nickname = response.jsonResponse[@"nickname"];
+    NSDictionary *dic = @{
+                          @"openID":openID,
+                          @"image":imageUrl,
+                          @"sex":sex,
+                          @"nickname":nickname
+                          };
+    if (self.handler) {
+        self.handler(nil, dic);
+    }
+}
+/**
+ * 登录失败后的回调
+ * \param cancelled 代表用户是否主动退出登录
+ */
+- (void)tencentDidNotLogin:(BOOL)cancelled {
+    if (cancelled) {
+        if (self.handler) {
+            self.handler(@"取消登录", nil);
+        }
+    } else {
+        if (self.handler) {
+            self.handler(@"非网络原因失败", nil);
+        }
+    }
+}
+
+/**
+ * 登录时网络有问题的回调
+ */
+- (void)tencentDidNotNetWork {
+    if (self.handler) {
+        self.handler(@"请检查网络连接", nil);
+    }
+}
+
+
+
+#pragma mark ----
 - (void)applicationWillResignActive:(UIApplication *)application {
-    [easyar_Engine onPause];
+//    [easyar_Engine onPause];
     taskId = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:NULL];
 }
 
@@ -238,25 +345,14 @@
         [application endBackgroundTask: background_task];
         background_task = UIBackgroundTaskInvalid;
     });
-        
-//    UIApplication *app = [UIApplication sharedApplication];
-//    __block UIBackgroundTaskIdentifier bgTask;
-//    bgTask = [app beginBackgroundTaskWithExpirationHandler:^{
-//        dispatch_async(dispatch_get_main_queue(), ^{
-//            if (bgTask != UIBackgroundTaskInvalid)
-//            {
-//                bgTask = UIBackgroundTaskInvalid;
-//            }
-//        });
-//    }];
-//    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-//        dispatch_async(dispatch_get_main_queue(), ^{
-//            if (bgTask != UIBackgroundTaskInvalid)
-//            {
-//                bgTask = UIBackgroundTaskInvalid;
-//            }
-//        });
-//    });
+    
+#ifndef MUSimulatorTest
+    if (self.glResourceHandler) {
+        // Delete OpenGL resources (e.g. framebuffer) of the SampleApp AR View
+        [self.glResourceHandler freeOpenGLESResources];
+        [self.glResourceHandler finishOpenGLESCommands];
+    }
+#endif
 }
 
 
@@ -266,7 +362,7 @@
 
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
-    [easyar_Engine onResume];
+//    [easyar_Engine onResume];
     [[UIApplication sharedApplication] endBackgroundTask:taskId];
 }
 

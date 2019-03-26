@@ -17,6 +17,7 @@
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *topConstraint;
 
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *navHeight;
 @property (weak, nonatomic) IBOutlet UIButton *returnBt;
 
 @property (weak, nonatomic) IBOutlet UIButton *submitBt;
@@ -39,15 +40,18 @@
 
 - (void)viewInit {
     
-    self.topConstraint.constant = SafeAreaTopHeight-44.0f;
+    self.topConstraint.constant = SafeAreaTopHeight-36.0f;
+    self.navHeight.constant = SafeAreaTopHeight;
+    
+    
     [self.returnBt setImageEdgeInsets:UIEdgeInsetsMake(5, 5, 5, 5)];
     self.submitBt.layer.masksToBounds = YES;
     self.submitBt.layer.cornerRadius = 5.0f;
     
     self.contentTextField.layer.masksToBounds = YES;
     self.contentTextField.layer.cornerRadius = 5.0f;
-    self.contentTextField.backgroundColor = kUIColorFromRGB(0xe8e8e8);
-    self.contentTextField.placeHolder = @"请输入信息";
+    self.contentTextField.backgroundColor = [UIColor clearColor];
+    self.contentTextField.placeHolder = @"请输入至少10个字以上要评价的内容以便于我们更 好的为您服务";
     
     UICollectionViewFlowLayout *layout = [[UICollectionViewFlowLayout alloc]init];
     layout.minimumLineSpacing = 10.0f;
@@ -57,6 +61,7 @@
     layout.itemSize = CGSizeMake(itemW, itemW);
     [self.photoCollectionView setCollectionViewLayout:layout];
     [self.photoCollectionView registerNib:[UINib nibWithNibName:@"MUImageCell" bundle:[NSBundle mainBundle]] forCellWithReuseIdentifier:@"MUImageCell"];
+    self.photoCollectionView.backgroundColor = [UIColor clearColor];
 }
 
 #pragma mark -

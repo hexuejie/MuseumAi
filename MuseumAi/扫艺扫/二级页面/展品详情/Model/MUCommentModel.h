@@ -20,6 +20,8 @@
 @property (assign, nonatomic) NSInteger count;
 /** 作者id */
 @property (copy, nonatomic) NSString *authorId;
+/* 作者图像 */
+@property(nonatomic, copy) NSString *authorAvatar;
 /** 创建时间 */
 @property (copy, nonatomic) NSString *createDate;
 /** 图片数组 */

@@ -76,6 +76,60 @@
     
 }
 
++ (void)getExhibitionsHomeWithLong:(CGFloat)lng
+                           lat:(CGFloat)lat
+                          page:(NSInteger)page
+                exhibitionName:(NSString *)exhibitionName
+                  exhibitionId:(NSString *)exhibitionId
+                       success:(MUHTTPSUCCESSBLOCK)success
+                        failed:(MUHTTPFAILEDBLOCK)failed {
+    
+    NSString *url = [NSString stringWithFormat:@"%@%@",kURLHostPort,kCustomRoute];
+    NSDictionary *bodyDic = @{
+                              @"api":@"getExhibitionList1",
+                              @"long1":@(lng),
+                              @"lat1":@(lat),
+                              @"page":@(page),
+                              @"pageSize":@5,
+                              @"exhibitionName":exhibitionName,
+//                              @"exhibitionState":exhibitionState?@(exhibitionState):@"",
+                              @"id":exhibitionId
+                              };
+    NSString *userId = [MUUserModel currentUser].userId;
+    if (userId != nil) {
+        bodyDic = @{
+                    @"api":@"getExhibitionList1",
+                    @"long1":@(lng),
+                    @"lat1":@(lat),
+                    @"page":@(page),
+                    @"userId":userId,
+                    @"pageSize":@5,
+                    @"exhibitionName":exhibitionName,
+//                    @"exhibitionState":exhibitionState?@(exhibitionState):@"",
+                    @"id":exhibitionId
+                    };
+    }
+    NSDictionary *reqDic = [MUHttpConstant combindDicWithReqBody:bodyDic];
+    [[self manager] POST:url parameters:reqDic progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        
+        NSError *error;
+        NSDictionary *result = nil;
+        if ([responseObject isKindOfClass:[NSData class]]) {
+            result = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableLeaves error:&error];
+        }else {
+            result = responseObject;
+        }
+        if (error == nil) {
+            success(result);
+        } else {
+            failed(error);
+        }
+        
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        failed(error);
+    }];
+}
+
 + (void)getExhibitionsWithLong:(CGFloat)lng
                            lat:(CGFloat)lat
                           page:(NSInteger)page
@@ -109,7 +163,9 @@
                     @"exhibitionState":exhibitionState?@(exhibitionState):@"",
                     @"id":exhibitionId
                     };
+        
     }
+    
     NSDictionary *reqDic = [MUHttpConstant combindDicWithReqBody:bodyDic];
     [[self manager] POST:url parameters:reqDic progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
 
@@ -490,6 +546,44 @@
     
 }
 
++ (void)getVuforiaDownloadInfoWithHallId:(NSString *)hallId
+                                     lng:(CGFloat)lng
+                                     lat:(CGFloat)lat
+                                 success:(MUHTTPSUCCESSBLOCK)success
+                                  failed:(MUHTTPFAILEDBLOCK)failed {
+
+    NSString *url = [NSString stringWithFormat:@"%@%@",kURLHostPort,kCustomRoute];
+    
+    NSDictionary *bodyDic = @{
+                              @"api":@"getNewResourceBundle",
+                              @"long1":@(lng),
+                              @"lat1":@(lat),
+                              @"hallId":hallId
+                              };
+    NSDictionary *reqDic = [MUHttpConstant combindDicWithReqBody:bodyDic];
+    [[self manager] POST:url parameters:reqDic progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        
+        NSError *error;
+        NSDictionary *result = nil;
+        if ([responseObject isKindOfClass:[NSData class]]) {
+            result = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableLeaves error:&error];
+        }else {
+            result = responseObject;
+        }
+        if (error == nil) {
+            success(result);
+        } else {
+            failed(error);
+        }
+        
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        if (failed != nil) {
+            failed(error);
+        }
+    }];
+    
+}
+
 + (void)getArDownLoadInfoWithHallId:(NSString *)hallId
                                 lng:(CGFloat)lng
                                 lat:(CGFloat)lat
@@ -803,6 +897,47 @@
     NSDictionary *bodyDic = @{
                               @"api":@"wxlogin",
                               @"openid":openId,
+                              @"photo":photoUrl,
+                              @"nickname":nickName,
+                              @"sex":sex,
+                              };
+    NSDictionary *reqDic = [MUHttpConstant combindDicWithReqBody:bodyDic];
+    [[self manager] POST:url parameters:reqDic progress:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        
+        NSError *error;
+        NSDictionary *result = nil;
+        if ([responseObject isKindOfClass:[NSData class]]) {
+            result = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableLeaves error:&error];
+        }else {
+            result = responseObject;
+        }
+        if (error == nil) {
+            success(result);
+            [MUHttpDataAccess sendPhoneType:result[@"data"]];
+        } else {
+            failed(error);
+        }
+        
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        if (failed != nil) {
+            failed(error);
+        }
+    }];
+}
+
+/** qq登录 */
++ (void)loginByQQOpenId:(NSString *)openId
+               photoUrl:(NSString *)photoUrl
+               nickName:(NSString *)nickName
+                    sex:(NSString *)sex
+                success:(MUHTTPSUCCESSBLOCK)success
+                 failed:(MUHTTPFAILEDBLOCK)failed {
+    
+    NSString *url = [NSString stringWithFormat:@"%@%@",kURLHostPort,kUserRoute];
+    
+    NSDictionary *bodyDic = @{
+                              @"api":@"qqlogin",
+                              @"userId":openId,
                               @"photo":photoUrl,
                               @"nickname":nickName,
                               @"sex":sex,
@@ -1280,7 +1415,7 @@
     }];
 }
 
-+ (void)getCollectListSuccess:(MUHTTPSUCCESSBLOCK)success
++ (void)getCollectListType:(NSString *)type Success:(MUHTTPSUCCESSBLOCK)success
                        failed:(MUHTTPFAILEDBLOCK)failed {
     
     NSString *url = [NSString stringWithFormat:@"%@%@",kURLHostPort,kUserRoute];
@@ -1289,6 +1424,7 @@
         return;
     }
     NSDictionary *bodyDic = @{
+                              @"type":type,//2
                               @"api":@"collectionList",
                               @"id":userId,
                               };
@@ -1349,8 +1485,8 @@
     } failure:nil];
 }
 
-+ (void)getFootPrintSuccess:(MUHTTPSUCCESSBLOCK)success
-                     failed:(MUHTTPFAILEDBLOCK)failed {
++ (void)getFootPrintType:(NSString *)type Success:(MUHTTPSUCCESSBLOCK)success
+                  failed:(MUHTTPFAILEDBLOCK)failed {
     
     NSString *url = [NSString stringWithFormat:@"%@%@",kURLHostPort,kUserRoute];
     NSString *userId = [MUUserModel currentUser].userId;
@@ -1358,6 +1494,7 @@
         return;
     }
     NSDictionary *bodyDic = @{
+                              @"type":type,//2
                               @"api":@"userFootList",
                               @"userId":userId,
                               };

@@ -25,9 +25,9 @@
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *photoHeightConstraint;
 
 @property (weak, nonatomic) IBOutlet UILabel *timeLb;
+@property (weak, nonatomic) IBOutlet UIImageView *avatarImageView;
+@property (weak, nonatomic) IBOutlet UILabel *levelLabel;
 
-@property (weak, nonatomic) IBOutlet UIButton *loveNumBt;
-@property (weak, nonatomic) IBOutlet UIButton *loveImageBt;
 
 @end
 
@@ -36,11 +36,50 @@
 - (void)awakeFromNib {
     
     [super awakeFromNib];
-    [self.loveImageBt setImageEdgeInsets:UIEdgeInsetsMake(5, 5, 5, 5)];
+//    [self.loveImageBt setImageEdgeInsets:UIEdgeInsetsMake(5, 5, 5, 5)];
     self.photoContainer.backgroundColor = [UIColor clearColor];
     self.contentHeightLb.numberOfLines = 0;
+    
+    self.levelLabel.layer.masksToBounds = YES;
+    self.levelLabel.layer.cornerRadius = 5.0f;
+    
+    self.avatarImageView.layer.masksToBounds = YES;
+    self.avatarImageView.layer.cornerRadius = 22.0f;
+    self.avatarImageView.contentMode = UIViewContentModeScaleAspectFill;
 }
 
+- (void)bindCellWithModel:(MUCommentModel *)model {
+    [self.avatarImageView sd_setImageWithURL:[NSURL URLWithString:model.authorAvatar]];
+    self.authorNameLb.text = model.authorName;
+    
+    self.contentHeightConstraint.constant = model.contentHeight;
+    if (self.contentHeightConstraint.constant == 0) {
+        self.contentTopConstraint.constant = 0;
+        self.contentHeightLb.hidden = YES;
+        self.contentHeightLb.text = @"";
+    }else {
+        self.contentTopConstraint.constant = 5;
+        self.contentHeightLb.hidden = NO;
+        self.contentHeightLb.text = model.content;
+    }
+    
+    if ([model photoHeight] == 0) {
+        self.photoTopConstraint.constant = 0.0f;
+        self.photoHeightConstraint.constant = 0.0f;
+        self.photoContainer.hidden = YES;
+    }else {
+        self.photoTopConstraint.constant = 5.0f;
+        self.photoHeightConstraint.constant = [model photoHeight];
+        self.photoContainer.hidden = NO;
+        self.photoContainer.photoContainerWidth = SCREEN_WIDTH-30.0f;
+        self.photoContainer.picPathStringsArray = model.images;
+        self.photoContainer.bigPicPathStringArray = model.images;
+    }
+    
+    self.timeLb.text = model.createDate;
+}
+
+/*
 - (void)bindCellWithModel:(MUCommentModel *)model loveClicked:(LOVECLICKEDBLOCK)loveBlock{
     
     _loveBlock = loveBlock;
@@ -73,6 +112,9 @@
     self.timeLb.text = model.createDate;
     [self.loveNumBt setTitle:[NSString stringWithFormat:@"%ld",model.count] forState:UIControlStateNormal];
 }
+ */
+
+
 
 - (IBAction)didLoveBtClicked:(id)sender {
     if (_loveBlock != nil) {

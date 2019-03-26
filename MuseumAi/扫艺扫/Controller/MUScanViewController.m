@@ -11,17 +11,25 @@
 #import "MUHallCell.h"
 #import "UIImageView+WebCache.h"
 #import "MUARModel.h"
-#import "MUARViewController.h"
+#import "MUVuforiaViewController.h"
+#import "MUARUtils.h"
+#import "MUAlertView.h"
 #import <CoreLocation/CoreLocation.h>
 #import <MapKit/MapKit.h>
 
+NSString * const kDownloadTips = @"下载离线包体验更佳哦！\n是否现在下载离线包？";
+typedef NS_ENUM(NSInteger, MUDownLoadType) {
+    MUDownLoadTypeXML = 0x01,       // 只下载XML
+    MUDownLoadTypeVideo = 0x02,     // 只下载Video
+};
+
+
 @interface MUScanViewController ()<UITableViewDataSource,UITableViewDelegate,UITextFieldDelegate>
 
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *topConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *topHeightConstraint;
 
+@property (weak, nonatomic) IBOutlet UIView *searchBgView;
 @property (weak, nonatomic) IBOutlet UITextField *searchTextField;
-
-@property (weak, nonatomic) IBOutlet UIButton *searchBt;
 
 @property (weak, nonatomic) IBOutlet UITableView *museumTbView;
 
@@ -31,7 +39,7 @@
 @property (nonatomic , strong) MUHallModel *selectHall;
 
 // 弹窗
-@property (strong, nonatomic) IBOutlet UIView *hallAlertBgView;
+@property (strong, nonatomic) MUAlertView *hallAlertBgView;
 @property (weak, nonatomic) IBOutlet UIView *hallAlertView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *hallAlertHeightConstraint;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *imageHeightConstraint;
@@ -39,7 +47,6 @@
 @property (weak, nonatomic) IBOutlet UIImageView *hallImageView;
 @property (weak, nonatomic) IBOutlet UILabel *hallTitleLb;
 @property (weak, nonatomic) IBOutlet UILabel *hallIntroduceLb;
-@property (weak, nonatomic) IBOutlet UIButton *downButton;
 
 @property (weak, nonatomic) IBOutlet UILabel *progressLb;
 @property (weak, nonatomic) IBOutlet UIProgressView *downloadProgress;
@@ -59,6 +66,10 @@
 @property (nonatomic , assign) CGFloat fileSize;
 /** ARModels */
 @property (strong, nonatomic) NSArray<MUARModel *> *ars;
+/* xml下载地址 */
+@property(nonatomic, copy) NSString *xmlUrl;
+/* dat下载地越 */
+@property(nonatomic, copy) NSString *datUrl;
 
 @end
 
@@ -74,9 +85,13 @@
 
 - (void)viewInit {
     
-    self.topConstraint.constant = SafeAreaTopHeight-44.0f;
-    self.bottomConstraint.constant = SafeAreaBottomHeight;
-    [self.searchBt setImageEdgeInsets:UIEdgeInsetsMake(5, 5, 5, 5)];
+    self.bottomConstraint.constant = SafeAreaBottomHeight + 49.0f;
+    self.topHeightConstraint.constant = SafeAreaTopHeight - 44.0f + 50.0f;
+    
+    self.searchBgView.layer.masksToBounds = YES;
+    self.searchBgView.layer.cornerRadius = 20.0f;
+    
+    self.museumTbView.separatorStyle = UITableViewCellSeparatorStyleNone;
     self.museumTbView.tableFooterView = [UIView new];
     [self.museumTbView registerNib:[UINib nibWithNibName:@"MUHallCell" bundle:[NSBundle mainBundle]] forCellReuseIdentifier:@"MUHallCell"];
     __weak typeof (self) weakSelf = self;
@@ -93,25 +108,29 @@
     self.searchTextField.delegate = self;
     
     // 弹窗初始化
-    self.hallAlertBgView.backgroundColor = [[UIColor blackColor]colorWithAlphaComponent:0.4];
-    self.hallAlertBgView.frame = CGRectMake(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-    [self.view addSubview:self.hallAlertBgView];
+    self.hallAlertBgView = [MUAlertView alertViewWithSize:CGSizeMake(SCREEN_WIDTH - 100.0f, 400.0f)];
+    [[UIApplication sharedApplication].delegate.window addSubview:self.hallAlertBgView];
     self.hallAlertBgView.hidden = YES;
-    [self.hallAlertBgView addTapTarget:self action:@selector(hideHallAlert:)];
     
-    self.hallAlertView.backgroundColor = [UIColor whiteColor];
-    self.hallAlertView.layer.masksToBounds = YES;
-    self.hallAlertView.layer.cornerRadius = 10.0f;
+    [self.hallAlertBgView.contentView addSubview:self.hallAlertView];
+    self.hallAlertView.backgroundColor = [UIColor clearColor];
+    [self.hallAlertView mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.top.bottom.mas_equalTo(0.0f);
+        make.left.mas_equalTo(20.0f);
+        make.right.mas_equalTo(-20.0f);
+    }];
     
     self.hallImageView.layer.masksToBounds = YES;
     self.hallImageView.contentMode = UIViewContentModeScaleAspectFit;
     
     self.hallTitleLb.font = [UIFont boldSystemFontOfSize:15.0f];
-    self.downButton.layer.masksToBounds = YES;
-    self.downButton.layer.cornerRadius = 8.0f;
     
     [self addGuideMask];
     
+}
+
+- (void)dealloc {
+    [self.hallAlertView removeFromSuperview];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -152,7 +171,11 @@
                 }
             } else {
                 [weakSelf.museumTbView.mj_header endRefreshing];
-                [weakSelf.museumTbView.mj_footer endRefreshing];
+                if ([result[@"state"]integerValue] == 20001) {
+                    [weakSelf.museumTbView.mj_footer endRefreshingWithNoMoreData];
+                } else {
+                    [weakSelf.museumTbView.mj_footer endRefreshing];
+                }
             }
             NSString *scanGuide = [[NSUserDefaults standardUserDefaults] objectForKey:@"scan_guide"];
             if (![scanGuide boolValue]) {
@@ -170,6 +193,9 @@
 }
 
 #pragma mark -
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    [self.view endEditing:YES];
+}
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     return self.halls.count;
 }
@@ -177,19 +203,27 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     MUHallCell *cell = [tableView dequeueReusableCellWithIdentifier:@"MUHallCell"];
     __weak typeof(self) weakSelf = self;
-    [cell bindCellWith:self.halls[indexPath.row] positionTappedBlock:^{
-        [weakSelf navigateToHall:weakSelf.halls[indexPath.row]];
+    MUHallModel *hall = self.halls[indexPath.row];
+    [cell bindCellWith:hall positionHandler:^{
+        [weakSelf navigateToHall:hall];
+    } downloadHandler:^{
+        weakSelf.selectHall = hall;
+        [weakSelf getDownLoadInfoWithId:hall.hallId downloadDirect:YES];
     }];
     return cell;
 }
 
+- (CGFloat)tableView:(UITableView *)tableView estimatedHeightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return 120.0f;
+}
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    return 93.0f;
+    return UITableViewAutomaticDimension;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    [self.view endEditing:YES];
     self.selectHall = self.halls[indexPath.row];
-    [self getHallIntroduce:self.selectHall.hallId];
+    [self getDownLoadInfoWithId:self.selectHall.hallId downloadDirect:NO];
 }
 
 #pragma mark ---- 导航
@@ -246,76 +280,11 @@
     [MKMapItem openMapsWithItems:items launchOptions:options];
 }
 
-
 #pragma mark ---- 文件的下载和保存
-- (void)getHallIntroduce:(NSString *)hallId {
-    
-    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    __weak typeof(self) weakSelf = self;
-    [MUHttpDataAccess getHallIntroduceWithHallId:hallId success:^(id result) {
-        [MBProgressHUD hideHUDForView:weakSelf.view animated:YES];
-        
-        if ([result[@"state"] integerValue] == 10001) {
-            weakSelf.selectHall.introduce = result[@"data"][@"hallIntroduce"];
-            [weakSelf getDownLoadInfoWithId:hallId];
-        }
-        
-    } failed:^(NSError *error) {
-        [MBProgressHUD hideHUDForView:weakSelf.view animated:YES];
-        [weakSelf alertWithMsg:kFailedTips handler:nil];
-    }];
-}
-
-- (void)showHallAlertViewWidth:(NSString *)name
-                           url:(NSString *)url
-                       content:(NSString *)content {
-    
-    self.isDownload = NO;
-    self.hallAlertBgView.hidden = NO;
-    self.downButton.hidden = NO;
-    self.downloadProgress.hidden = YES;
-    self.progressLb.hidden = YES;
-    
-    CGFloat contentHeight = [MULayoutHandler caculateHeightWithContent:content font:12.0f width:SCREEN_WIDTH-110.0f];
-    self.hallAlertHeightConstraint.constant = 151.0f+contentHeight;
-    
-    __weak typeof(self) weakSelf = self;
-    [self.hallImageView sd_setImageWithURL:[NSURL URLWithString:url] completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
-        weakSelf.imageHeightConstraint.constant = image.size.height * (SCREEN_WIDTH-100.0f)/image.size.width;
-        weakSelf.hallAlertHeightConstraint.constant = weakSelf.hallAlertHeightConstraint.constant + (weakSelf.imageHeightConstraint.constant - 80.0f);
-    }];
-    self.hallTitleLb.text = name;
-    self.hallIntroduceLb.text = content;
-    
-    // 直接开始
-    self.isDownload = YES;
-    self.downButton.hidden = YES;
-    self.downloadProgress.hidden = NO;
-    self.progressLb.hidden = NO;
-    self.progressLb.text = [NSString stringWithFormat:@"等待开始"];
-    [self.downloadProgress setProgress:0.0f];
-    [self downLoadFiles];
-}
-
-- (void)hideHallAlert:(id)sender {
-    if(self.isDownload) {
-        return;
-    }
-    self.hallAlertBgView.hidden = YES;
-}
-
-- (IBAction)didDownLoadButtonClicked:(id)sender {
-    self.isDownload = YES;
-    self.downButton.hidden = YES;
-    self.downloadProgress.hidden = NO;
-    self.progressLb.hidden = NO;
-    self.progressLb.text = [NSString stringWithFormat:@"等待开始"];
-    [self.downloadProgress setProgress:0.0f];
-    [self downLoadFiles];
-}
-
-// 获取下载信息
-- (void)getDownLoadInfoWithId:(NSString *)hallId {
+/** 获取下载信息
+ * downloadDirect 无需询问，直接下载
+ */
+- (void)getDownLoadInfoWithId:(NSString *)hallId downloadDirect:(BOOL)downloadDirect {
     
     [MUHttpDataAccess statisticFootprint:MUFOOTPRINTTYPEHALL statisticID:hallId];
     
@@ -325,89 +294,235 @@
     [[MUMapHandler getInstance]fetchPositionAsyn:^(CLLocation *location, BMKLocationReGeocode *regeo) {
         
         [MBProgressHUD hideHUDForView:weakSelf.view animated:YES];
-        [MUHttpDataAccess getArDownLoadInfoWithHallId:hallId lng:location.coordinate.longitude lat:location.coordinate.latitude success:^(id result) {
+        [MUHttpDataAccess getVuforiaDownloadInfoWithHallId:hallId lng:location.coordinate.longitude lat:location.coordinate.latitude success:^(id result) {
             
             if ([result[@"state"]integerValue] == 10001) {
-                
-                NSNumber *updateDate = result[@"data"][@"updateDate"];
+                // 扫描的对象模型
+                NSMutableArray *mutArrays = [NSMutableArray array];
+                for (NSDictionary *dic in result[@"data"][@"filelist"]) {
+                    MUARModel *ar = [MUARModel exhibitsARModel:dic];
+                    [mutArrays addObject:ar];
+                }
+                weakSelf.ars = [NSArray arrayWithArray:mutArrays];
+                // xml文件和data文件地址
+                weakSelf.xmlUrl = result[@"data"][@"exhibitionHall"][@"gtarXmlFile"];
+                weakSelf.datUrl = result[@"data"][@"exhibitionHall"][@"gtarDatFile"];
+                // 展馆的相关
+                weakSelf.selectHall =[MUHallModel hallWithDic:result[@"data"][@"exhibitionHall"]];
+                // 更新日期判断
+                NSNumber *updateDate = result[@"data"][@"exhibitionHall"][@"gtarUpdateDate"];
                 NSLog(@"updateDate:%@",updateDate);
                 weakSelf.selectHall.fileUpdate = updateDate;
                 NSString *lastDate = [[NSUserDefaults standardUserDefaults] objectForKey:[NSString stringWithFormat:@"%@_fileDate",weakSelf.selectHall.hallId]];
-                NSString *dirPath = [weakSelf ARFilesPathWithHallId:weakSelf.selectHall.hallId];
+                NSString *xmlPath = [MUARUtils vuforiaPathWithHallId:weakSelf.selectHall.hallId];
+                NSString *videoPath = [MUARUtils videosPathWithHallId:weakSelf.selectHall.hallId];
                 if ([updateDate integerValue] == [lastDate integerValue] &&
-                    [[NSFileManager defaultManager]fileExistsAtPath:dirPath]) {
-                    [weakSelf toARController];  // 版本号相同，跳入AR界面
-                }else {
-                    weakSelf.fileSize = [result[@"data"][@"sizeCount"] doubleValue];
-                    NSMutableArray *mutArrays = [NSMutableArray array];
-                    for (NSDictionary *dic in result[@"data"][@"filelist"]) {
-                        [mutArrays addObject:[MUARModel exhibitsARModel:dic]];
+                    [[NSFileManager defaultManager]fileExistsAtPath:xmlPath]) {
+                    // 获取未下载的AR文件
+                    NSArray *unloadARs = [weakSelf getUnLoadARModes];
+                    if (unloadARs.count == 0) {
+                        // 不用下载直接进入
+                        [weakSelf toARController];
+                    } else {
+                        if (downloadDirect) {
+                            [weakSelf showSelectHallAlertView:MUDownLoadTypeVideo];
+                        } else {
+                            // 询问是否下载video文件
+                            [weakSelf alertWithMsg:kDownloadTips leftTitle:@"暂不下载" leftHandler:^{
+                                [weakSelf toARController];
+                            } rightTitle:@"确定" rightHandler:^{
+                                [weakSelf showSelectHallAlertView:MUDownLoadTypeVideo];
+                            }];
+                        }
                     }
-                    weakSelf.ars = [NSArray arrayWithArray:mutArrays];
-                    [weakSelf showHallAlertViewWidth:weakSelf.selectHall.hallName url:weakSelf.selectHall.hallPicUrl content:weakSelf.selectHall.introduce];
+                } else {
+                    // 清除之前的数据
+                    NSArray *xmlFiles = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:xmlPath error:nil];
+                    NSArray *videoFiles = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:videoPath error:nil];
+                    for (NSString *fileName in xmlFiles) {
+                        NSString *filePath = [NSString stringWithFormat:@"%@%@",xmlPath,fileName];
+                        [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
+                    }
+                    for (NSString *fileName in videoFiles) {
+                        NSString *filePath = [NSString stringWithFormat:@"%@%@",videoPath,fileName];
+                        [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
+                    }
+                    if (downloadDirect) {
+                        [weakSelf showSelectHallAlertView:(MUDownLoadTypeXML|MUDownLoadTypeVideo)];
+                    } else {
+                        // 需要下载xml文件和video文件,询问是否下载video文件
+                        [weakSelf alertWithMsg:kDownloadTips leftTitle:@"暂不下载" leftHandler:^{
+                            // 只下载XML
+                            [weakSelf showSelectHallAlertView:MUDownLoadTypeXML];
+                        } rightTitle:@"确定" rightHandler:^{
+                            // XML和Video都要下载
+                            [weakSelf showSelectHallAlertView:(MUDownLoadTypeXML|MUDownLoadTypeVideo)];
+                        }];
+                    }
                 }
             }
         } failed:^(NSError *error) {
             [weakSelf alertWithMsg:kFailedTips handler:nil];
         }];
     }];
+    
 }
 
-- (void)downLoadFiles {
+/** 获取选中展馆还未下载的AR */
+- (NSArray<MUARModel *> *)getUnLoadARModes {
+    NSMutableArray *mutArs = [NSMutableArray arrayWithArray:self.ars];
+    for (MUARModel *ar in self.ars) {
+        // 属于无视频的AR
+        if (ar.videoUrl == nil || ar.videoUrl.length == 0) {
+            [mutArs removeObject:ar];
+        }
+    }
+    NSString *videoPath = [MUARUtils videosPathWithHallId:self.selectHall.hallId];
+    NSDirectoryEnumerator *fileEnum = [[NSFileManager defaultManager] enumeratorAtPath:videoPath];
+    NSString *fileName = nil;
+    while (fileName = [fileEnum nextObject]) {
+        for (MUARModel *ar in self.ars) {
+            // 已下载了该视频
+            NSString *mp4FileName = [NSString stringWithFormat:@"%@.mp4",ar.exhibitsId];
+            if ([mp4FileName isEqualToString:fileName]) {
+                [mutArs removeObject:ar];
+                break;
+            }
+        }
+    }
+    return [NSArray arrayWithArray:mutArs];
+}
+
+/** 显示选中的展馆信息，下载进度显示 */
+- (void)showSelectHallAlertView:(MUDownLoadType)type {
+    
+    NSString *name = self.selectHall.hallName;
+    NSString *url = self.selectHall.hallPicUrl;
+    NSString *content = self.selectHall.introduce;
+    
+    self.hallAlertBgView.hidden = NO;
+    
+    CGFloat contentHeight = [MULayoutHandler caculateHeightWithContent:content font:12.0f width:SCREEN_WIDTH-150.0f];
+    self.hallAlertHeightConstraint.constant = 151.0f+contentHeight;
+    self.hallAlertBgView.contentSize = CGSizeMake(SCREEN_WIDTH-100.0f, self.hallAlertHeightConstraint.constant);
+    
     __weak typeof(self) weakSelf = self;
+    [self.hallImageView sd_setImageWithURL:[NSURL URLWithString:url] completed:^(UIImage * _Nullable image, NSError * _Nullable error, SDImageCacheType cacheType, NSURL * _Nullable imageURL) {
+        // 图片下载完成后，计算image的尺寸
+        weakSelf.imageHeightConstraint.constant = image.size.height * (SCREEN_WIDTH-100.0f)/image.size.width;
+        weakSelf.hallAlertHeightConstraint.constant = weakSelf.hallAlertHeightConstraint.constant + (weakSelf.imageHeightConstraint.constant - 80.0f);
+        weakSelf.hallAlertBgView.contentSize = CGSizeMake(SCREEN_WIDTH-100.0f, weakSelf.hallAlertHeightConstraint.constant);
+    }];
+    self.hallTitleLb.text = name;
+    self.hallIntroduceLb.text = content;
     
-    NSString *dirPath = [weakSelf ARFilesPathWithHallId:weakSelf.selectHall.hallId];
-    [[NSFileManager defaultManager] removeItemAtPath:dirPath error:nil];
-    
-    dispatch_queue_t t = dispatch_queue_create("download", NULL);
-    dispatch_async(t, ^{
-        NSUInteger length = 0;
-        NSMutableArray *mutExhibits = [NSMutableArray array];
-        for (int i=0;i<weakSelf.ars.count;i++) {
-            MUARModel *ar = weakSelf.ars[i];
-            CGFloat percent = 0.0f;
-            for (NSString *imageUrl in ar.imageUrls) {
-                NSString *imageName = [NSString stringWithFormat:@"%@_%d.jpg",ar.exhibitsId,(int)[ar.imageUrls indexOfObject:imageUrl]];
-                length += [weakSelf downLoadFile:imageUrl storageName:imageName];
-                NSDictionary *dic = @{
-                                      @"name" : [NSString stringWithFormat:@"%@_%@_%d",weakSelf.selectHall.hallId , ar.exhibitsId, (int)ar.type],
-                                      @"image" : [NSString stringWithFormat:@"%@/%@",weakSelf.selectHall.hallId , imageName],
-                                      };
-                [mutExhibits addObject:dic];
-                
-                percent = (CGFloat)length/1000.0f/weakSelf.fileSize;
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [weakSelf reloadUISideWithPercent:percent];
-                });
-            }
-            if (ar.type == ExhibitsARTypeNone) {
-                continue;
-            }
-            NSString *videoName = [NSString stringWithFormat:@"%@.mp4",ar.exhibitsId];
-            length += [weakSelf downLoadFile:ar.videoUrl storageName:videoName];
-            percent = (CGFloat)length/1000.0f/weakSelf.fileSize;
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [weakSelf reloadUISideWithPercent:percent];
-            });
-        }
-        if (![[NSFileManager defaultManager] fileExistsAtPath:dirPath]) {
-            [[NSFileManager defaultManager] createDirectoryAtPath:dirPath withIntermediateDirectories:YES attributes:nil error:nil];
-        }
-        NSString *jsonPath = [NSString stringWithFormat:@"%@%@.json",dirPath,self.selectHall.hallId];
-        NSArray *images = [NSArray arrayWithArray:mutExhibits];
-        [images writeToFile:jsonPath atomically:YES];
-        NSLog(@"length:%ld,size:%.2f",length,weakSelf.fileSize);
-        dispatch_async(dispatch_get_main_queue(), ^{
-            weakSelf.isDownload = NO;
-            weakSelf.hallAlertBgView.hidden = YES;
-            [weakSelf toARController];
+    // 开始下载
+    self.isDownload = YES;
+    self.progressLb.text = [NSString stringWithFormat:@"等待开始"];
+    [self.downloadProgress setProgress:0.0f];
+    [self downLoadFilesForHall:self.selectHall.hallId downloadType:type completeHandler:^(BOOL success, NSError *error) {
+        weakSelf.isDownload = NO;
+        [weakSelf hideHallAlert:nil];
+        if (success) {
             NSString *updateKey = [NSString stringWithFormat:@"%@_fileDate",weakSelf.selectHall.hallId];
             [[NSUserDefaults standardUserDefaults]setObject:weakSelf.selectHall.fileUpdate forKey:updateKey];
             [[NSUserDefaults standardUserDefaults] synchronize];
-        });
-    });
+            [weakSelf toARController];
+        } else {
+            [weakSelf alertWithMsg:error.localizedDescription handler:nil];
+        }
+    }];
+}
+/** 隐藏展馆信息 */
+- (void)hideHallAlert:(id)sender {
+    if(self.isDownload) {
+        return;
+    }
+    self.hallAlertBgView.hidden = YES;
 }
 
+/** 下载并保存文件 */
+- (void)downLoadFilesForHall:(NSString *)hallID
+                downloadType:(MUDownLoadType)type
+             completeHandler:(void(^)(BOOL success, NSError *error))handler {
+    
+    __block NSInteger totalFileCount = 0;   // 总文件个数
+    __block NSInteger downLoadCount = 0;    // 已下载文件个数
+    
+    __weak typeof(self) weakSelf = self;
+    // 判断是否要下载媒体文件
+    if (type & MUDownLoadTypeVideo) {
+        // 下载视频文件
+        NSArray *unloadArs = [self getUnLoadARModes];
+        totalFileCount += unloadArs.count;
+        for (MUARModel *ar in unloadArs) {
+            NSString *fileName = [NSString stringWithFormat:@"%@.mp4",ar.exhibitsId];
+            [MUARUtils downLoadFile:ar.videoUrl name:fileName completeHandler:^(NSData *fileData, NSString *fileName, NSError *error) {
+                NSLog(@"下载完成:%@, %ld",ar.exhibitsId,totalFileCount);
+                if (fileData.length > 0 &&
+                    downLoadCount < totalFileCount) {
+                    [MUARUtils writeToFile:fileData fileName:fileName type:MUWriteFileTypeVideo hallID:weakSelf.selectHall.hallId];
+                    [weakSelf reloadUISideWithPercent:(downLoadCount*1.0/totalFileCount)];
+                    downLoadCount ++;
+                    if (downLoadCount == totalFileCount &&
+                        handler) {
+                        handler(YES, nil);
+                    }
+                } else if(error) {
+                    downLoadCount = NSNotFound;
+                    if (handler) {
+                        handler(NO, error);
+                    }
+                }
+            }];
+        }
+        
+    }
+    // 判断是否要下载XML文件
+    if (type & MUDownLoadTypeXML) {
+        totalFileCount += 2;
+        // 下载xml文件
+        [MUARUtils downLoadFile:self.xmlUrl name:@"hall.xml" completeHandler:^(NSData *fileData, NSString *fileName, NSError *error) {
+            NSLog(@"下载完成:xml, %ld", totalFileCount);
+            if (fileData.length > 0 &&
+                downLoadCount < totalFileCount) {
+                [MUARUtils writeToFile:fileData fileName:fileName type:MUWriteFileTypeXML hallID:weakSelf.selectHall.hallId];
+                [weakSelf reloadUISideWithPercent:(downLoadCount*1.0/totalFileCount)];
+                downLoadCount ++;
+                if (downLoadCount == totalFileCount &&
+                    handler) {
+                    handler(YES, nil);
+                }
+            } else if(error) {
+                downLoadCount = NSNotFound;
+                if (handler) {
+                    handler(NO, error);
+                }
+            }
+        }];
+        [MUARUtils downLoadFile:self.datUrl name:@"hall.dat" completeHandler:^(NSData *fileData, NSString *fileName, NSError *error) {
+            NSLog(@"下载完成:dat, %ld", totalFileCount);
+            if (fileData.length > 0 &&
+                downLoadCount < totalFileCount) {
+                [MUARUtils writeToFile:fileData fileName:fileName type:MUWriteFileTypeXML hallID:weakSelf.selectHall.hallId];
+                [weakSelf reloadUISideWithPercent:(downLoadCount*1.0/totalFileCount)];
+                downLoadCount ++;
+                if (downLoadCount == totalFileCount &&
+                    handler) {
+                    handler(YES, nil);
+                }
+            } else if(error) {
+                downLoadCount = NSNotFound;
+                if (handler) {
+                    handler(NO, error);
+                }
+            }
+        }];
+    }
+    
+}
+
+/** 进度条显示 */
 - (void)reloadUISideWithPercent:(CGFloat)percent {
     if (percent >= 1) {
         percent = 1;
@@ -416,38 +531,9 @@
     [self.downloadProgress setProgress:percent];
 }
 
-- (NSString *)ARFilesPathWithHallId:(NSString *)hallId {
-    return [NSString stringWithFormat:@"%@/Library/Caches/%@/",NSHomeDirectory(),hallId];
-}
-
-/** 下载单个文件 */
-- (NSUInteger)downLoadFile:(NSString *)url
-         storageName:(NSString *)name {
-    __weak typeof(self) weakSelf = self;
-    NSString *filePath = [NSString stringWithFormat:@"%@%@",[self ARFilesPathWithHallId:self.selectHall.hallId],name];
-    NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:url]];
-    [weakSelf writeToFile:data path:filePath name:name];
-    NSLog(@"data:%ld",data.length);
-    return data.length;
-}
-
-- (void)writeToFile:(NSData *)data path:(NSString *)path name:(NSString *)name {
-    NSString *dirPath = [self ARFilesPathWithHallId:self.selectHall.hallId];
-    if (![[NSFileManager defaultManager] fileExistsAtPath:dirPath]) {
-        [[NSFileManager defaultManager] createDirectoryAtPath:dirPath withIntermediateDirectories:YES attributes:nil error:nil];
-    }
-    NSError *error;
-    BOOL writeFg = [data writeToFile:path options:NSDataWritingAtomic error:&error];
-    if (writeFg) {
-//        NSLog(@"存储成功");
-    }else {
-        NSLog(@"存储失败:%@",error);
-    }
-}
-
 /** 到AR页 */
 - (void)toARController {
-    MUARViewController *arVC = [MUARViewController new];
+    MUVuforiaViewController *arVC = [MUVuforiaViewController new];
     arVC.hall = self.selectHall;
     arVC.ars = self.ars;
     [self.navigationController pushViewController:arVC animated:YES];
@@ -468,7 +554,11 @@
 
 - (void)addGuideMask {
     
-    CGRect rect = CGRectMake(10, SafeAreaTopHeight-4.0f, SCREEN_WIDTH-20.0f, 93.0f);
+    CGFloat cellHeight = 110.0f;
+    CGFloat imageHeight = (SCREEN_WIDTH - 30.0f) * 9/16.0f;
+    cellHeight += imageHeight;
+    
+    CGRect rect = CGRectMake(10, self.topHeightConstraint.constant, SCREEN_WIDTH-20.0f, cellHeight);
     UIBezierPath *tempPath = [UIBezierPath bezierPathWithRoundedRect:rect byRoundingCorners:(UIRectCornerTopLeft |UIRectCornerTopRight |UIRectCornerBottomRight|UIRectCornerBottomLeft) cornerRadii:CGSizeMake(4, 4)];
     UIView *guideView = [[UIView alloc] initWithFrame:SCREEN_BOUNDS];
     guideView.backgroundColor = [UIColor blackColor];
@@ -510,7 +600,7 @@
     self.selectHall = [self.halls firstObject];
     if (self.selectHall != nil) {
         self.guideView.hidden = YES;
-        [self getHallIntroduce:self.selectHall.hallId];
+        [self getDownLoadInfoWithId:self.selectHall.hallId downloadDirect:NO];
         [[NSUserDefaults standardUserDefaults] setObject:@"1" forKey:@"scan_guide"];
     }
     [self.museumTbView.mj_header beginRefreshing];
@@ -518,7 +608,7 @@
 
 #pragma mark -
 
-- (IBAction)didSearchButtonClicked:(id)sender {
+- (void)didSearchButtonClicked:(id)sender {
     [self.searchTextField resignFirstResponder];
     self.searchStr = self.searchTextField.text;
     if (self.searchStr.length == 0) {

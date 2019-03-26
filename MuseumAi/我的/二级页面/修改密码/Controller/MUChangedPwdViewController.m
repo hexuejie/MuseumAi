@@ -34,7 +34,7 @@
 
 - (void)viewInit {
     
-    self.topConstraint.constant = SafeAreaTopHeight-44.0f;
+    self.topConstraint.constant = SafeAreaTopHeight-36.0f;
     [self.returnBt setImageEdgeInsets:UIEdgeInsetsMake(5, 5, 5, 5)];
     self.submitBt.enabled = NO;
     self.submitBt.backgroundColor = [kMainColor colorWithAlphaComponent:0.5];

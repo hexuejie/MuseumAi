@@ -10,8 +10,7 @@
 
 typedef NS_ENUM(NSInteger, ExhibitsARType) {
     ExhibitsARTypeNone = 0,     // 无视频
-    ExhibitsARTypeFollow = 1,   // 跟随
-    ExhibitsARTypePop = 2       // 弹出
+    ExhibitsARTypePop = 1       // 弹出
 };
 
 @interface MUARModel : NSObject
@@ -23,7 +22,7 @@ typedef NS_ENUM(NSInteger, ExhibitsARType) {
 /** 展品Id */
 @property (assign, nonatomic) ExhibitsARType type;
 /** 展品image */
-@property (copy, nonatomic) NSArray *imageUrls;
+@property (copy, nonatomic) NSArray<NSString *> *vuforiaIDs;
 
 + (instancetype)exhibitsARModel:(NSDictionary *)dic;
 

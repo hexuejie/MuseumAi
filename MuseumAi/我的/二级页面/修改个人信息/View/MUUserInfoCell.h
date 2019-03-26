@@ -14,4 +14,11 @@
 
 @property (weak, nonatomic) IBOutlet UILabel *infoContentLb;
 
+
+@property (weak, nonatomic) IBOutlet UIButton *manButton;
+@property (weak, nonatomic) IBOutlet UIButton *womanButton;
+@property (weak, nonatomic) IBOutlet UIView *sexChooseView;
+
+
+
 @end

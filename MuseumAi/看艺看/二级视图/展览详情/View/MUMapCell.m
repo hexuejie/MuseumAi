@@ -32,8 +32,8 @@
     [self.mapView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.top.bottom.right.mas_equalTo(0);
     }];
-    self.mapBgView.layer.cornerRadius = 5.0f;
-    self.mapBgView.layer.masksToBounds = YES;
+//    self.mapBgView.layer.cornerRadius = 5.0f;
+//    self.mapBgView.layer.masksToBounds = YES;
     [self.mapBgView sendSubviewToBack:self.mapView];
     
     self.mapView.scrollEnabled = NO;

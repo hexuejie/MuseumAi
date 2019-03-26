@@ -20,7 +20,8 @@
 
 @interface MUExhibitDetailViewController ()<UITableViewDataSource,UITableViewDelegate,AVAudioPlayerDelegate,MUVideoTabBarDelegate>
 
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *topConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *topHeightConstraint;
+
 
 /** 大图 */
 @property (strong, nonatomic) UIImageView *bigImageView;
@@ -95,15 +96,16 @@
     [self dataInit];
 }
 
+
 - (void)viewInit {
     
-    self.topConstraint.constant = SafeAreaTopHeight-44.0f;
+    self.topHeightConstraint.constant = SafeAreaTopHeight;
     
     self.bigPlayBgView.frame = CGRectMake(0, 0, SCREEN_HEIGHT, SCREEN_WIDTH);;
     [self.view addSubview:self.bigPlayBgView];
     self.bigPlayBgView.hidden = YES;
     
-    [self.backButton setImageEdgeInsets:UIEdgeInsetsMake(10, 10, 10, 10)];
+    [self.backButton setImageEdgeInsets:UIEdgeInsetsMake(18.5, 13.5, 13.5, 18.5)];
     self.bigImageView = [[UIImageView alloc]init];
     self.bigImageView.backgroundColor = [UIColor blackColor];
     self.bigImageView.contentMode = UIViewContentModeScaleAspectFit;
@@ -366,6 +368,7 @@
             default:
                 break;
         }
+        [self.item removeObserver:self forKeyPath:@"status"];
     }
 }
 
@@ -432,15 +435,14 @@
             __weak typeof(self) weakSelf = self;
             MUCommentModel *comment = self.comments[indexPath.row-2];
             MUCommentCell *cell = [tableView dequeueReusableCellWithIdentifier:@"MUCommentCell"];
-            [cell bindCellWithModel:comment loveClicked:^{
-                [weakSelf agreeComment:comment];
-            }];
+            [cell bindCellWithModel:comment];
             return cell;
             break;
         }
     }
 }
 
+/*
 - (void)agreeComment:(MUCommentModel *)comment {
     
     if (![MUUserModel currentUser].isLogin) {
@@ -460,6 +462,7 @@
         [weakSelf alertWithMsg:kFailedTips handler:nil];
     }];
 }
+ */
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     switch (indexPath.row) {
@@ -469,7 +472,7 @@
             break;
         }
         case 1: {
-            return 45.0f;
+            return 60.0f;
             break;
         }
         default: {
@@ -684,6 +687,7 @@
     }
 }
 
+/** 查看展品3D模型 */
 - (IBAction)didModelButtonClicked:(id)sender {
     MUHotGuideViewController *vc = [MUHotGuideViewController new];
     vc.url = [NSURL URLWithString:self.exhibit.exhibit3DUrl];

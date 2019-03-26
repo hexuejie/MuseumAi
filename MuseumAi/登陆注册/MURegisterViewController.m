@@ -39,6 +39,8 @@
     self.codeLb.layer.borderColor = kUIColorFromRGB(0x666666).CGColor;
     self.codeLb.layer.borderWidth = 1.0f;
     [self.codeLb addTapTarget:self action:@selector(getCodeClicked:)];
+    
+    
 }
 
 #pragma mark -
@@ -120,14 +122,14 @@
     if (self.count <= 0) {
         [self.timer invalidate];
         self.timer = nil;
-        self.codeLb.text = @"验证码";
+        self.codeLb.text = @"获取验证码";
     }
     self.count--;
-    self.codeLb.text = [NSString stringWithFormat:@"%ld秒",self.count];
+    self.codeLb.text = [NSString stringWithFormat:@"%ld秒后重新发送",self.count];
     if (self.count == 0) {
         [self.timer invalidate];
         self.timer = nil;
-        self.codeLb.text = @"验证码";
+        self.codeLb.text = @"获取验证码";
     }
 }
 

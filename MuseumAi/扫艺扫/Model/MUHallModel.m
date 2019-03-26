@@ -19,6 +19,7 @@
     hall.hallOpenTime = dic[@"hallOpenTime"];
     hall.hallPicUrl = dic[@"hallPicUrl"];
     hall.distance = dic[@"distance"];
+    hall.introduce = dic[@"hallIntroduce"];
     CGFloat lng = [dic[@"sittingPositionX"] doubleValue];
     CGFloat lat = [dic[@"sittingPositionY"] doubleValue];
     hall.location = CLLocationCoordinate2DMake(lat, lng);

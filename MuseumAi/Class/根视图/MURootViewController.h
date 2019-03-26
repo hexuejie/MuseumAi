@@ -10,11 +10,8 @@
 #import "MUHttpDataAccess.h"
 #import "MUMapHandler.h"
 #import "MULoginViewController.h"
+#import "UIViewController+MUExtension.h"
 
 @interface MURootViewController : UIViewController
-
-- (void)alertWithMsg:(NSString *)msg handler:(void (^)())handler;
-
-- (void)alertWithMsg:(NSString *)msg okHandler:(void (^)())handler;
 
 @end

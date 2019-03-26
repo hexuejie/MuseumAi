@@ -13,6 +13,9 @@
 - (void)awakeFromNib {
     [super awakeFromNib];
     // Initialization code
+    
+    self.tagLineView.layer.cornerRadius = 1.0;
+    self.tagLineView.layer.masksToBounds = YES;
 }
 
 @end

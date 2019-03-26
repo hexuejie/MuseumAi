@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14283.14"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -30,8 +30,15 @@
             <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Nkj-Oq-GvY">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="64"/>
+                    <color key="backgroundColor" red="0.89219987392425537" green="0.16926184296607971" blue="0.16616833209991455" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="64" id="ClF-m3-aLp"/>
+                    </constraints>
+                </view>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="IKH-o8-Zdc">
-                    <rect key="frame" x="10" y="30" width="30" height="30"/>
+                    <rect key="frame" x="10" y="27" width="30" height="30"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="30" id="AxC-fI-9QM"/>
                         <constraint firstAttribute="width" constant="30" id="ep0-Y5-DZI"/>
@@ -42,16 +49,16 @@
                     </connections>
                 </button>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="个人资料" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gk9-an-hxo">
-                    <rect key="frame" x="137.5" y="30" width="100" height="30"/>
+                    <rect key="frame" x="137.5" y="27" width="100" height="30"/>
                     <constraints>
                         <constraint firstAttribute="width" constant="100" id="0cC-vq-d6i"/>
                     </constraints>
-                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                    <color key="textColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
+                    <fontDescription key="fontDescription" type="system" weight="medium" pointSize="18"/>
+                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="xRy-Os-ZbB">
-                    <rect key="frame" x="0.0" y="70" width="375" height="577"/>
+                    <rect key="frame" x="0.0" y="64" width="375" height="583"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <connections>
                         <outlet property="dataSource" destination="-1" id="lFl-uc-AY5"/>
@@ -59,25 +66,29 @@
                     </connections>
                 </tableView>
             </subviews>
-            <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color key="backgroundColor" red="0.96460121870040894" green="0.96476620435714722" blue="0.96459084749221802" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
                 <constraint firstItem="xRy-Os-ZbB" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="3Bz-PW-43S"/>
                 <constraint firstItem="gk9-an-hxo" firstAttribute="bottom" secondItem="IKH-o8-Zdc" secondAttribute="bottom" id="Dv0-Gb-xLR"/>
+                <constraint firstItem="xRy-Os-ZbB" firstAttribute="top" secondItem="Nkj-Oq-GvY" secondAttribute="bottom" id="NEs-vr-5qc"/>
                 <constraint firstAttribute="bottom" secondItem="xRy-Os-ZbB" secondAttribute="bottom" constant="20" id="XKV-8R-CYj"/>
                 <constraint firstItem="gk9-an-hxo" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="Y7x-LA-cfk"/>
                 <constraint firstItem="IKH-o8-Zdc" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="10" id="avt-03-h5R"/>
-                <constraint firstItem="xRy-Os-ZbB" firstAttribute="top" secondItem="gk9-an-hxo" secondAttribute="bottom" constant="10" id="cwo-rW-Abg"/>
+                <constraint firstItem="Nkj-Oq-GvY" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="bqr-3D-FL9"/>
+                <constraint firstAttribute="trailing" secondItem="Nkj-Oq-GvY" secondAttribute="trailing" id="cyZ-qv-5bm"/>
                 <constraint firstItem="gk9-an-hxo" firstAttribute="top" secondItem="IKH-o8-Zdc" secondAttribute="top" id="nAc-PE-97e"/>
-                <constraint firstItem="IKH-o8-Zdc" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="30" id="okX-b5-Gdx"/>
+                <constraint firstItem="IKH-o8-Zdc" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="27" id="okX-b5-Gdx"/>
+                <constraint firstItem="Nkj-Oq-GvY" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="vmr-r4-uyh"/>
                 <constraint firstAttribute="trailing" secondItem="xRy-Os-ZbB" secondAttribute="trailing" id="y1D-vI-1nY"/>
             </constraints>
+            <point key="canvasLocation" x="130.40000000000001" y="152.47376311844079"/>
         </view>
         <view contentMode="scaleToFill" id="uoh-Ri-YdS">
             <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="5aJ-B9-MOP">
-                    <rect key="frame" x="57" y="273.5" width="260" height="120"/>
+                    <rect key="frame" x="57.5" y="273.5" width="260" height="120"/>
                     <subviews>
                         <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="aCI-zA-1Rf">
                             <rect key="frame" x="10" y="22" width="240" height="30"/>
@@ -205,6 +216,6 @@
         <image name="女_un" width="67" height="67"/>
         <image name="男_on" width="70" height="70"/>
         <image name="男_un" width="67" height="67"/>
-        <image name="返回" width="40" height="40"/>
+        <image name="返回" width="23" height="16.5"/>
     </resources>
 </document>

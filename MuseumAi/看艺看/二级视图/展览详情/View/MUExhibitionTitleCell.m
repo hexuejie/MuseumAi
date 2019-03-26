@@ -40,10 +40,7 @@
     [self.exhibitionImageView addTapTarget:self action:@selector(didImageTapped:)];
     [self.scoreBgView addTapTarget:self action:@selector(didScoreTapped:)];
     
-    self.scoreBgView.layer.shadowColor = [UIColor blackColor].CGColor;
-    self.scoreBgView.layer.shadowOpacity = 0.35;
-    self.scoreBgView.layer.shadowRadius = 5.0f;
-    self.scoreBgView.layer.shadowOffset = CGSizeMake(5.0f, 5.0f);
+
 }
 
 - (void)bindCellWithModel:(MUExhibitionDetailModel *)exhibition delegate:(id<MUExhibitionCellDelegate>)delegate {
@@ -79,6 +76,9 @@
     
     self.exhibitionNameLb.text = exhibition.exhibitionName;
     self.exhibtionTimeLb.text = exhibition.exhibitionTime;
+    if (self.exhibtionTimeLb.text.length>10) {
+      self.exhibtionTimeLb.text = [self.exhibtionTimeLb.text substringToIndex:10];
+    }
     switch (exhibition.sellState) {
         case MUExhibitionTicketTypeFree:
             self.exhibitionTicketsLb.text = @"免费";

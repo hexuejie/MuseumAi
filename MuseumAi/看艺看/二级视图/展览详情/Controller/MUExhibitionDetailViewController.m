@@ -13,7 +13,7 @@
 #import "MUExhibitionDescripeCell.h"
 #import "MUProductorCell.h"
 #import "MUMapCell.h"
-#import "MUCommentTitleCell.h"
+#import "MUHomeCommentTitleCell.h"
 #import "MUCommentCell.h"
 #import "MJRefresh.h"
 
@@ -28,6 +28,7 @@
 @interface MUExhibitionDetailViewController ()<UITableViewDelegate,UITableViewDataSource, MUExhibitionCellDelegate, SDPhotoBrowserDelegate>
 
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *topConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *tabTopConstraint;
 
 @property (weak, nonatomic) IBOutlet UIButton *returnBt;
 
@@ -88,16 +89,17 @@
 - (void)viewInit {
     
     self.topConstraint.constant = SafeAreaTopHeight-44.0f;
+    self.tabTopConstraint.constant = -SafeAreaTopHeight+44;
     
     [self.returnBt setImageEdgeInsets:UIEdgeInsetsMake(10, 10, 10, 10)];
-    self.exhibitionTableView.tableFooterView = [UIView new];
-    self.exhibitionTableView.estimatedRowHeight = 0;
     [self.exhibitionTableView registerNib:[UINib nibWithNibName:@"MUExhibitionTitleCell" bundle:[NSBundle mainBundle]] forCellReuseIdentifier:@"MUExhibitionTitleCell"];
     [self.exhibitionTableView registerNib:[UINib nibWithNibName:@"MUExhibitionDescripeCell" bundle:[NSBundle mainBundle]] forCellReuseIdentifier:@"MUExhibitionDescripeCell"];
     [self.exhibitionTableView registerNib:[UINib nibWithNibName:@"MUProductorCell" bundle:[NSBundle mainBundle]] forCellReuseIdentifier:@"MUProductorCell"];
     [self.exhibitionTableView registerNib:[UINib nibWithNibName:@"MUMapCell" bundle:[NSBundle mainBundle]] forCellReuseIdentifier:@"MUMapCell"];
-    [self.exhibitionTableView registerNib:[UINib nibWithNibName:@"MUCommentTitleCell" bundle:[NSBundle mainBundle]] forCellReuseIdentifier:@"MUCommentTitleCell"];
+    [self.exhibitionTableView registerNib:[UINib nibWithNibName:@"MUHomeCommentTitleCell" bundle:[NSBundle mainBundle]] forCellReuseIdentifier:@"MUHomeCommentTitleCell"];
     [self.exhibitionTableView registerNib:[UINib nibWithNibName:@"MUCommentCell" bundle:[NSBundle mainBundle]] forCellReuseIdentifier:@"MUCommentCell"];
+    self.exhibitionTableView.estimatedRowHeight = 0;
+    self.exhibitionTableView.tableFooterView = [UIView new];
     self.exhibitionTableView.allowsSelection = NO;
     
     __weak typeof (self) weakSelf = self;
@@ -122,9 +124,16 @@
     self.scoreAlertBgView.frame = SCREEN_BOUNDS;
     self.scoreAlertBgView.backgroundColor = [[UIColor blackColor]colorWithAlphaComponent:0.5];
     [self.view addSubview:self.scoreAlertBgView];
-    [self.scoreAlertBgView addTapTarget:self action:@selector(scoreAlertHidden:)];
+//    [self.scoreAlertBgView addTapTarget:self action:@selector(scoreAlertHidden:)];
     [self.scoreAlert addTapTarget:self action:@selector(none_fun)];
     self.scoreAlertBgView.hidden = YES;
+
+    UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:self.scoreAlert.bounds byRoundingCorners:UIRectCornerTopRight|UIRectCornerBottomLeft cornerRadii:CGSizeMake(20, 20)];
+    CAShapeLayer *maskLayer = [[CAShapeLayer alloc]init];
+    maskLayer.frame = self.scoreAlert.bounds;
+    maskLayer.path = maskPath.CGPath;
+    self.scoreAlert.layer.mask = maskLayer;
+
 }
 
 - (void)dataInit {
@@ -283,7 +292,7 @@
             break;
         }
         case 4: {
-            MUCommentTitleCell *cell = [tableView dequeueReusableCellWithIdentifier:@"MUCommentTitleCell"];
+            MUHomeCommentTitleCell *cell = [tableView dequeueReusableCellWithIdentifier:@"MUHomeCommentTitleCell"];
             return cell;
             break;
         }
@@ -292,9 +301,7 @@
             __weak typeof(self) weakSelf = self;
             MUCommentModel *comment = self.comments[indexPath.row-5];
             MUCommentCell *cell = [tableView dequeueReusableCellWithIdentifier:@"MUCommentCell"];
-            [cell bindCellWithModel:comment loveClicked:^{
-                [weakSelf agreeComment:comment];
-            }];
+            [cell bindCellWithModel:comment];
             return cell;
             break;
         }
@@ -302,6 +309,7 @@
     return nil;
 }
 
+/*
 
 - (void)agreeComment:(MUCommentModel *)comment {
     
@@ -322,6 +330,7 @@
         [weakSelf alertWithMsg:kFailedTips handler:nil];
     }];
 }
+ */
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     switch (indexPath.row) {
@@ -332,13 +341,16 @@
             return self.exhibition.introduceHeight;
             break;
         case 2:
-            return 155.0f;
-            break;
-        case 3:
+            if (self.exhibition.exhibits.count == 0) {
+                return 0.01;
+            }
             return 200.0f;
             break;
+        case 3:
+            return 280.0f;
+            break;
         case 4:
-            return 45.0f;
+            return 58.0f;
             break;
         default: {
             MUCommentModel *comment = self.comments[indexPath.row-5];
@@ -536,7 +548,9 @@
 - (void)scoreAlertHidden:(id)sender {
     self.scoreAlertBgView.hidden = YES;
 }
-
+- (IBAction)closeCommentStar:(id)sender {
+    self.scoreAlertBgView.hidden = YES;
+}
 #pragma mark ---- 评分
 
 - (IBAction)didScoreOkClicked:(id)sender {

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14313.18" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14283.14"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -20,29 +20,19 @@
                 <subviews>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="tbc-eO-LWI">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="10"/>
-                        <color key="backgroundColor" red="0.90980392156862744" green="0.90980392156862744" blue="0.90980392156862744" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="backgroundColor" red="0.97636479139328003" green="0.97653168439865112" blue="0.97635418176651001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="10" id="HgQ-nk-zce"/>
                         </constraints>
                     </view>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="作品欣赏" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yhW-73-phH">
-                        <rect key="frame" x="40" y="10" width="270" height="30"/>
-                        <constraints>
-                            <constraint firstAttribute="height" constant="30" id="mKz-dw-94k"/>
-                        </constraints>
-                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                        <rect key="frame" x="15" y="25" width="295" height="24"/>
+                        <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
                         <color key="textColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="作品观赏" translatesAutoresizingMaskIntoConstraints="NO" id="Oa9-DP-Vfq">
-                        <rect key="frame" x="15" y="15" width="20" height="20"/>
-                        <constraints>
-                            <constraint firstAttribute="width" constant="20" id="hTY-ST-Fh3"/>
-                            <constraint firstAttribute="height" constant="20" id="uZe-o4-XIp"/>
-                        </constraints>
-                    </imageView>
                     <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="none" translatesAutoresizingMaskIntoConstraints="NO" id="xEB-B9-a19">
-                        <rect key="frame" x="15" y="45" width="295" height="99.5"/>
+                        <rect key="frame" x="15" y="66" width="295" height="68.5"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="kWS-EQ-xVg">
                             <size key="itemSize" width="50" height="50"/>
@@ -58,25 +48,21 @@
                 </subviews>
                 <constraints>
                     <constraint firstAttribute="trailing" secondItem="tbc-eO-LWI" secondAttribute="trailing" id="3Eb-EF-4m2"/>
-                    <constraint firstItem="xEB-B9-a19" firstAttribute="top" secondItem="yhW-73-phH" secondAttribute="bottom" constant="5" id="CPw-qU-izs"/>
                     <constraint firstItem="tbc-eO-LWI" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="DTv-9N-TKQ"/>
-                    <constraint firstItem="yhW-73-phH" firstAttribute="centerY" secondItem="Oa9-DP-Vfq" secondAttribute="centerY" id="Evr-4E-8wO"/>
+                    <constraint firstItem="xEB-B9-a19" firstAttribute="top" secondItem="yhW-73-phH" secondAttribute="bottom" constant="17" id="Eb0-Yd-iXu"/>
                     <constraint firstItem="tbc-eO-LWI" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="JG4-Tg-BKX"/>
-                    <constraint firstItem="Oa9-DP-Vfq" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="15" id="THt-6g-psM"/>
                     <constraint firstAttribute="trailing" secondItem="xEB-B9-a19" secondAttribute="trailing" constant="10" id="TKB-9L-M0f"/>
                     <constraint firstItem="xEB-B9-a19" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="15" id="Xdk-uM-MgS"/>
-                    <constraint firstItem="yhW-73-phH" firstAttribute="top" secondItem="tbc-eO-LWI" secondAttribute="bottom" id="dsG-Ha-ET9"/>
-                    <constraint firstAttribute="bottom" secondItem="xEB-B9-a19" secondAttribute="bottom" constant="10" id="kvH-kD-9nQ"/>
-                    <constraint firstItem="yhW-73-phH" firstAttribute="leading" secondItem="Oa9-DP-Vfq" secondAttribute="trailing" constant="5" id="mvr-l4-Ya5"/>
+                    <constraint firstItem="yhW-73-phH" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="15" id="d7A-tr-bAh"/>
+                    <constraint firstAttribute="bottom" secondItem="xEB-B9-a19" secondAttribute="bottom" constant="20" id="kvH-kD-9nQ"/>
                     <constraint firstAttribute="trailing" secondItem="yhW-73-phH" secondAttribute="trailing" constant="10" id="sPU-gn-6Xc"/>
+                    <constraint firstItem="yhW-73-phH" firstAttribute="top" secondItem="tbc-eO-LWI" secondAttribute="bottom" constant="15" id="u6V-YU-f62"/>
                 </constraints>
             </tableViewCellContentView>
             <connections>
                 <outlet property="productorCollectionView" destination="xEB-B9-a19" id="jha-g0-s8Z"/>
             </connections>
+            <point key="canvasLocation" x="133" y="148"/>
         </tableViewCell>
     </objects>
-    <resources>
-        <image name="作品观赏" width="50" height="50"/>
-    </resources>
 </document>

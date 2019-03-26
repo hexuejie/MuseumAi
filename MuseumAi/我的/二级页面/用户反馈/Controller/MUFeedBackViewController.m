@@ -30,13 +30,13 @@
 
 - (void)viewInit {
     
-    self.topConstraint.constant = SafeAreaTopHeight-44.0f;
+    self.topConstraint.constant = SafeAreaTopHeight-36.0f;
     
     [self.returnBt setImageEdgeInsets:UIEdgeInsetsMake(5, 5, 5, 5)];
     self.contentTextView.layer.masksToBounds = YES;
     self.contentTextView.layer.cornerRadius = 8.0f;
-    self.contentTextView.placeHolder = @"请留下您宝贵的意见";
-    self.contentTextView.backgroundColor = kUIColorFromRGB(0xe8e8e8);
+    self.contentTextView.placeHolder = @"请输入至少10个字以上要评价的内容以便于我们更好的为您服务";
+    self.contentTextView.backgroundColor = [UIColor clearColor];
     self.submitBt.layer.masksToBounds = YES;
     self.submitBt.layer.cornerRadius = 5.0f;
     

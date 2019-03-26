@@ -17,19 +17,15 @@
 @property (weak, nonatomic) IBOutlet UILabel *exNameLb;
 // 距离
 @property (weak, nonatomic) IBOutlet UILabel *exDistanceLb;
-// 描述
-@property (weak, nonatomic) IBOutlet UILabel *exContentLb;
 // 位置
 @property (weak, nonatomic) IBOutlet UILabel *exPositionLb;
-// 售票状态
-@property (weak, nonatomic) IBOutlet UILabel *exSellStatusLb;
-// 收藏
-@property (weak, nonatomic) IBOutlet UILabel *exCollectionLb;
-// 时间状态
-@property (weak, nonatomic) IBOutlet UILabel *exTimeStatusLb;
+
+@property (weak, nonatomic) IBOutlet UILabel *freeLabel;
+@property (weak, nonatomic) IBOutlet UILabel *statusLabel;
+
+@property (weak, nonatomic) IBOutlet UILabel *collectLabel;
 
 @end
-
 @implementation MUExhibitionTableCell
 
 - (void)awakeFromNib {
@@ -38,34 +34,47 @@
     self.selectionStyle = UITableViewCellSelectionStyleNone;
     
     self.exImageView.contentMode = UIViewContentModeScaleAspectFill;
-    self.exImageView.layer.cornerRadius = 8.0f;
+    self.exImageView.layer.cornerRadius = 5.0f;
     self.exImageView.layer.masksToBounds = YES;
     
+    self.freeLabel.layer.borderWidth = 1.0;
+    self.freeLabel.layer.borderColor = self.freeLabel.textColor.CGColor;
+    self.statusLabel.layer.borderWidth = 1.0;
+    self.statusLabel.layer.borderColor = self.freeLabel.textColor.CGColor;
+    self.freeLabel.layer.masksToBounds = YES;
+    self.freeLabel.layer.cornerRadius = 4.0;
+    self.statusLabel.layer.masksToBounds = YES;
+    self.statusLabel.layer.cornerRadius = 4.0;
+    UIBezierPath *maskPath = [UIBezierPath bezierPathWithRoundedRect:self.collectLabel.bounds byRoundingCorners:UIRectCornerTopLeft | UIRectCornerBottomRight cornerRadii:CGSizeMake(5, 5)];
+    CAShapeLayer *maskLayer = [[CAShapeLayer alloc] init];
+    maskLayer.frame = self.collectLabel.bounds;
+    maskLayer.path = maskPath.CGPath;
+    self.collectLabel.layer.mask = maskLayer;
 }
 
 - (void)bindCellWithExhibition:(MUExhibitionModel *)exhibition {
     
     [self.exImageView sd_setImageWithURL:[NSURL URLWithString:exhibition.imageUrl] placeholderImage:[UIImage imageNamed:@"加载占位"]];
     self.exNameLb.text = exhibition.name;
-    self.exContentLb.text = exhibition.introduce;
-    self.exDistanceLb.text = [NSString stringWithFormat:@"距离:%@km",exhibition.distance];
-    self.exPositionLb.text = [NSString stringWithFormat:@"%@ %@",exhibition.position,exhibition.address];
+
+    self.exDistanceLb.text = [NSString stringWithFormat:@"%@/km",exhibition.distance];
+//    self.exPositionLb.text = [NSString stringWithFormat:@"%@ %@",exhibition.position,exhibition.address];
     
     switch (exhibition.sell) {
         case MUExhibitionTicketTypeFree:
-            self.exSellStatusLb.text = @"售票状态:免费";
+            self.freeLabel.text = @"免费";
             break;
         case MUExhibitionTicketTypeSell:
-            self.exSellStatusLb.text = @"售票状态:在售";
+            self.freeLabel.text = @"在售";
             break;
         case MUExhibitionTicketTypeUnSell:
-            self.exSellStatusLb.text = @"售票状态:停售";
+            self.freeLabel.text = @"停售";
             
         default:
             break;
     }
-    self.exCollectionLb.text = [NSString stringWithFormat:@"%@收藏",exhibition.loveCount];
-    self.exTimeStatusLb.text = exhibition.time;
+    self.collectLabel.text = [NSString stringWithFormat:@"%@人收藏",exhibition.loveCount];
+    self.statusLabel.text = exhibition.time;
     
 }
 

@@ -12,11 +12,15 @@
 #import "MUAlightLayout.h"
 #import "MUSearchResultViewController.h"
 
+#import "MUSearchHotReusableView.h"
+#import "MUSearchHistoryReusableView.h"
+
 #define HISTORYKEY @"historySearch"
 
-@interface MUSearchViewController ()<UICollectionViewDelegateFlowLayout,UICollectionViewDataSource>
+@interface MUSearchViewController ()<UICollectionViewDelegateFlowLayout,UICollectionViewDataSource,UISearchResultsUpdating,UISearchBarDelegate,UITextFieldDelegate>
 
 
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *navHeight;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *topConstraint;
 
 /** 热门搜索列表 */
@@ -27,18 +31,13 @@
 
 @property (weak, nonatomic) IBOutlet UIButton *returnBt;
 
-@property (weak, nonatomic) IBOutlet UIButton *searchBt;
-
-@property (weak, nonatomic) IBOutlet UITextField *inputTextField;
-
-@property (weak, nonatomic) IBOutlet UICollectionView *hotCollectionView;
-
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *hotConstraint;
+//@property (weak, nonatomic) IBOutlet UIButton *searchBt;
+@property (weak, nonatomic) IBOutlet UIView *searchBackView;
 
 @property (weak, nonatomic) IBOutlet UICollectionView *historyCollectionView;
 
-//@property (weak, nonatomic) IBOutlet NSLayoutConstraint *hostoryConstraint;
-
+@property (nonatomic, strong) UITextField *searchField;
+@property (nonatomic, strong) UISearchBar *searchBar;
 @end
 
 @implementation MUSearchViewController
@@ -54,22 +53,36 @@
 - (void)viewInit {
     
     self.topConstraint.constant = SafeAreaTopHeight-44.0f;
+    self.navHeight.constant = SafeAreaTopHeight;
+    _searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(52, self.topConstraint.constant, SCREEN_WIDTH - 77, 34)];
+    _searchBar.placeholder = @"请输入展览馆的名称";
+    _searchBar.layer.cornerRadius = 17;
+    _searchBar.layer.masksToBounds = YES;
+    _searchBar.backgroundImage = [[UIImage alloc] init];
+    _searchBar.backgroundColor = [UIColor whiteColor];
+    _searchBar.showsCancelButton = NO;
+    _searchBar.barStyle=UIBarStyleDefault;
+    _searchBar.keyboardType = UIKeyboardTypeNamePhonePad;
+    _searchBar.delegate = self;
+    _searchBar.showsSearchResultsButton = NO;
+    //    [searchBar setImage:[UIImage imageNamed:@"Search_Icon"] forSearchBarIcon:UISearchBarIconSearch state:UIControlStateNormal];
+    [_searchBar setImage:[UIImage imageNamed:@"搜索"] forSearchBarIcon:UISearchBarIconClear state:UIControlStateNormal];
+    _searchBar.tintColor = kUIColorFromRGB(0x333333);
+    
+    _searchField = [_searchBar valueForKey:@"_searchField"];
+    //    _searchField.delegate = self;
+    [_searchField setBackgroundColor:[UIColor clearColor]];
+    _searchField.textColor= kUIColorFromRGB(0x333333);
+    _searchField.font = [UIFont systemFontOfSize:15];
+    [_searchField setValue:[UIFont systemFontOfSize:15] forKeyPath:@"_placeholderLabel.font"];
+    [_searchField setValue:kUIColorFromRGB(0x999999) forKeyPath:@"_placeholderLabel.textColor"];
+    //只有编辑时出现出现那个叉叉
+    _searchField.clearButtonMode = UITextFieldViewModeWhileEditing;
+    [self.searchBackView addSubview:_searchBar];
+    
     
     [self.returnBt setImageEdgeInsets:UIEdgeInsetsMake(5, 5, 5, 5)];
-    [self.searchBt setImageEdgeInsets:UIEdgeInsetsMake(5, 5, 5, 5)];
-    
-    MUAlightLayout  *layout = [[MUAlightLayout alloc] initWthType:AlignWithLeft];
-    layout.minimumLineSpacing = 5;
-    layout. minimumInteritemSpacing  = 2;
-    layout.scrollDirection =  UICollectionViewScrollDirectionVertical;
-    layout.sectionInset = UIEdgeInsetsMake(0,0,0,0);
-    [self.hotCollectionView setCollectionViewLayout:layout];
-    self.hotCollectionView.backgroundColor = [UIColor whiteColor];
-    self.hotCollectionView.delegate = self;
-    self.hotCollectionView.dataSource = self;
-    [self.hotCollectionView registerClass:[MUSearchCollectionCell class] forCellWithReuseIdentifier:@"MUSearchCollectionCell"];
-    [self.hotCollectionView addObserver:self forKeyPath:@"contentSize" options:NSKeyValueObservingOptionNew context:nil];
-    
+
     MUAlightLayout  *layout2 = [[MUAlightLayout alloc] initWthType:AlignWithLeft];
     layout2.minimumLineSpacing = 5;
     layout2. minimumInteritemSpacing  = 2;
@@ -81,15 +94,18 @@
     self.historyCollectionView.delegate = self;
     self.historyCollectionView.dataSource = self;
     [self.historyCollectionView registerClass:[MUSearchCollectionCell class] forCellWithReuseIdentifier:@"MUSearchCollectionCell"];
+    [self.historyCollectionView registerNib:[UINib nibWithNibName:NSStringFromClass([MUSearchHotReusableView class]) bundle:nil] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"MUSearchHotReusableView"];
+    [self.historyCollectionView registerNib:[UINib nibWithNibName:NSStringFromClass([MUSearchHistoryReusableView class]) bundle:nil] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"MUSearchHistoryReusableView"];
+    
     
 }
 
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
-    if ([keyPath isEqualToString:@"contentSize"] && [object isEqual:self.hotCollectionView]) {
-        CGSize size = self.hotCollectionView.contentSize;
-        self.hotConstraint.constant = size.height;
-    }
-}
+//- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
+//    if ([keyPath isEqualToString:@"contentSize"] && [object isEqual:self.hotCollectionView]) {
+//        CGSize size = self.hotCollectionView.contentSize;
+//        self.hotConstraint.constant = size.height;
+//    }
+//}
 
 - (void)viewWillAppear:(BOOL)animated {
     
@@ -107,7 +123,7 @@
     
     [super viewWillDisappear:animated];
     
-    [self.inputTextField resignFirstResponder];
+    [self.searchBar resignFirstResponder];
 }
 
 - (void)dataInit {
@@ -127,7 +143,7 @@
                 [mutSearchs addObject:search];
             }
             weakSelf.hotSearchs = [NSArray arrayWithArray:mutSearchs];
-            [weakSelf.hotCollectionView reloadData];
+            [weakSelf.historyCollectionView reloadData];
         }
     } failed:^(NSError *error) {
         [weakSelf alertWithMsg:kFailedTips handler:nil];
@@ -135,10 +151,14 @@
 }
 
 #pragma mark -
+- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView{
+    return 2;
+}
+
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    if ([collectionView isEqual:self.hotCollectionView]) {
+    if (section == 0) {
         return self.hotSearchs.count;
-    } else if([collectionView isEqual:self.historyCollectionView]) {
+    } else if(section == 1) {
         return self.historySearchs.count;
     } else {
         return 0;
@@ -146,13 +166,13 @@
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-    if ([collectionView isEqual:self.hotCollectionView]) {
+    if (indexPath.section == 0) {
         /// 热门
         MUSearchCollectionCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"MUSearchCollectionCell" forIndexPath:indexPath];
         MUSearchModel *search = self.hotSearchs[indexPath.item];
         cell.textLabel.text = search.name;
         return cell;
-    } else if([collectionView isEqual:self.historyCollectionView]) {
+    } else if (indexPath.section == 1) {
         /// 我的
         MUSearchCollectionCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"MUSearchCollectionCell" forIndexPath:indexPath];
         cell.textLabel.text = self.historySearchs[indexPath.item];
@@ -162,34 +182,53 @@
     }
 }
 
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section{
+    return CGSizeMake(SCREEN_WIDTH, 55.0f);
+}
+//- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForFooterInSection:(NSInteger)section;
+
 - (CGSize)collectionView:(UICollectionView *)collectionView
                   layout:(UICollectionViewLayout *)collectionViewLayout
   sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-    if ([collectionView isEqual:self.hotCollectionView]) {
-        /// 热门
-        MUSearchModel *search = self.hotSearchs[indexPath.item];
-        UILabel *lb = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, 30.0f)];
-        lb.text = search.name;
-        lb.font = [UIFont systemFontOfSize:12.0f];
-        [lb sizeToFit];
-        CGFloat width = lb.frame.size.width;
-        return CGSizeMake(width+10.0f, 30.0f);
-    } else if([collectionView isEqual:self.historyCollectionView]) {
-        /// 我的
-        UILabel *lb = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, 30.0f)];
-        lb.text = self.historySearchs[indexPath.item];
-        lb.font = [UIFont systemFontOfSize:12.0f];
-        [lb sizeToFit];
-        CGFloat width = lb.frame.size.width;
-        return CGSizeMake(width+10.0f, 30.0f);
-    } else {
-        return CGSizeZero;
-    }
+    return CGSizeMake(SCREEN_WIDTH, 40.0f);
+//    if ([collectionView isEqual:self.hotCollectionView]) {
+//        /// 热门
+//        MUSearchModel *search = self.hotSearchs[indexPath.item];
+//        UILabel *lb = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, 30.0f)];
+//        lb.text = search.name;
+//        lb.font = [UIFont systemFontOfSize:12.0f];
+//        [lb sizeToFit];
+//        CGFloat width = lb.frame.size.width;
+//        return CGSizeMake(width+10.0f, 30.0f);
+//    } else if([collectionView isEqual:self.historyCollectionView]) {
+//        /// 我的
+//        UILabel *lb = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, SCREEN_WIDTH, 30.0f)];
+//        lb.text = self.historySearchs[indexPath.item];
+//        lb.font = [UIFont systemFontOfSize:12.0f];
+//        [lb sizeToFit];
+//        CGFloat width = lb.frame.size.width;
+//        return CGSizeMake(width+10.0f, 30.0f);
+//    } else {
+//        return CGSizeZero;
+//    }
 }
 
+- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath{
+    if ([kind  isEqualToString:UICollectionElementKindSectionHeader]) {  //header
+        if (indexPath.section == 0) {
+            /// 热门
+            MUSearchHotReusableView *header = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"MUSearchHotReusableView" forIndexPath:indexPath];
+            return header;
+        } else if (indexPath.section == 1) {
+            MUSearchHistoryReusableView *header = [collectionView dequeueReusableSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"MUSearchHistoryReusableView" forIndexPath:indexPath];
+            return header;
+        }
+    }
+    return [UICollectionReusableView new];
+}
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    if ([collectionView isEqual:self.hotCollectionView]) {
+    if (indexPath.section == 0) {
         /// 热门
         NSString *searchStr = self.hotSearchs[indexPath.item].name;
         NSMutableArray *mutHis = [NSMutableArray arrayWithArray:self.historySearchs];
@@ -202,7 +241,7 @@
         
         [self toSearchController:searchStr];
         
-    } else if([collectionView isEqual:self.historyCollectionView]) {
+    } else if (indexPath.section == 1) {
         /// 我的
         NSString *searchStr = self.historySearchs[indexPath.item];
         NSMutableArray *mutHis = [NSMutableArray arrayWithArray:self.historySearchs];
@@ -217,9 +256,19 @@
     }
 }
 
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView{
+    [self.searchBar resignFirstResponder];
+}
 #pragma mark -
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
-    [self.inputTextField resignFirstResponder];
+    [self.searchBar resignFirstResponder];
+}
+
+#pragma mark - Text View Delegate
+
+// 键盘中，搜索按钮被按下，执行的方法
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar{
+    [self didSearchClicked:nil];
 }
 
 #pragma mark -
@@ -230,7 +279,7 @@
 
 - (IBAction)didSearchClicked:(id)sender {
     
-    NSString *searchStr = self.inputTextField.text;
+    NSString *searchStr = self.searchBar.text;
     if (searchStr.length == 0) {
         [self alertWithMsg:@"请输入搜索内容" handler:nil];
         return;

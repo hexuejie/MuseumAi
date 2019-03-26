@@ -26,7 +26,7 @@
     layout.minimumLineSpacing = 10.0f;
     layout.minimumInteritemSpacing = 0.0f;
     layout.sectionInset = UIEdgeInsetsMake(0, 0, 0, 0);
-    layout.itemSize = CGSizeMake(120.0, 100.0f);
+    layout.itemSize = CGSizeMake(116.0, 116.0f);
     layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
     [self.productorCollectionView setCollectionViewLayout:layout];
     [self.productorCollectionView registerNib:[UINib nibWithNibName:@"MUImageCell" bundle:[NSBundle mainBundle]] forCellWithReuseIdentifier:@"MUImageCell"];

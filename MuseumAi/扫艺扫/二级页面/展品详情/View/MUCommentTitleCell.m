@@ -18,8 +18,8 @@
 - (void)awakeFromNib {
     [super awakeFromNib];
     
-    self.separatorInset = UIEdgeInsetsMake(0, SCREEN_WIDTH, 0, 0);
-    self.commentTitleLb.font = [UIFont boldSystemFontOfSize:15.0f];
+//    self.separatorInset = UIEdgeInsetsMake(0, SCREEN_WIDTH, 0, 0);
+//    self.commentTitleLb.font = [UIFont boldSystemFontOfSize:15.0f];
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {

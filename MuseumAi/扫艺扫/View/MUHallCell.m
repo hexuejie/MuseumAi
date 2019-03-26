@@ -25,6 +25,8 @@ typedef void (^kPositionTappedBlock)(void);
 
 /** tapped */
 @property (nonatomic , copy) kPositionTappedBlock block;
+/** downLoad */
+@property (nonatomic , copy) kPositionTappedBlock downloadBlock;
 
 @end
 
@@ -39,18 +41,28 @@ typedef void (^kPositionTappedBlock)(void);
     self.hallImageView.layer.cornerRadius = 10.0f;
     self.hallImageView.contentMode = UIViewContentModeScaleAspectFit;
     
+    self.hallOpenTimeLb.textColor = kMainColor;
+    self.hallOpenTimeLb.layer.masksToBounds = YES;
+    self.hallOpenTimeLb.layer.cornerRadius = 5.0f;
+    self.hallOpenTimeLb.layer.borderColor = kMainColor.CGColor;
+    self.hallOpenTimeLb.layer.borderWidth = 1.0f;
+    
     [self.hallAddressLb addTapTarget:self action:@selector(didAddressTapped:)];
     
 }
 
-- (void)bindCellWith:(MUHallModel *)hall positionTappedBlock:(kPositionTappedBlock)block {
+- (void)bindCellWith:(MUHallModel *)hall
+     positionHandler:(void(^)(void))positionHandler
+     downloadHandler:(void(^)(void))downloadHandler {
     
-    self.block = block;
+    self.block = positionHandler;
+    self.downloadBlock = downloadHandler;
     
+    /** 16:9 */
     [self.hallImageView sd_setImageWithURL:[NSURL URLWithString:hall.hallPicUrl] placeholderImage:[UIImage imageNamed:@"加载占位"]];
     self.hallNameLb.text = hall.hallName;
     self.hallAddressLb.text = hall.hallAddress;
-    self.hallOpenTimeLb.text = hall.hallOpenTime;
+    self.hallOpenTimeLb.text = [NSString stringWithFormat:@" %@    ",hall.hallOpenTime];
     self.hallDistanceLb.text = [NSString stringWithFormat:@"%.2fkm",[hall.distance doubleValue]];
 }
 
@@ -59,6 +71,13 @@ typedef void (^kPositionTappedBlock)(void);
         self.block();
     }
 }
+
+- (IBAction)didDownloadClicked:(id)sender {
+    if (self.downloadBlock) {
+        self.downloadBlock();
+    }
+}
+
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
     [super setSelected:selected animated:animated];

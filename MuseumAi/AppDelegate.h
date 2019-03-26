@@ -8,6 +8,10 @@
 
 #import <UIKit/UIKit.h>
 
+#ifndef MUSimulatorTest
+#import "ZACGLResourceHandler.h"
+#endif
+
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
@@ -15,8 +19,14 @@
 /** 抽奖活动 */
 @property (nonatomic , copy) NSString *activityUrl;
 
+#ifndef MUSimulatorTest
+/** OpenGL代理 */
+@property (nonatomic, weak) id<ZACGLResourceHandler> glResourceHandler;
+#endif
+
 - (void)tabBarInit;
 - (void)toActivityPage:(NSURL *)url;
+- (void)loginByQQ:(void (^)(NSString *errorMsg, NSDictionary *response))handler;
 
 @end
 

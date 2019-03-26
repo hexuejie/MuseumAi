@@ -9,6 +9,10 @@
 #import <Foundation/Foundation.h>
 #import "MUHttpConstant.h"
 
+// halls 展馆
+// exhibits 展品
+// exhibitions 展览
+
 typedef void (^MUHTTPSUCCESSBLOCK)(id result);
 typedef void (^MUHTTPFAILEDBLOCK)(NSError *error);
 
@@ -122,12 +126,27 @@ typedef NS_ENUM(NSInteger, MUFOOTPRINTTYPE) {
                    success:(MUHTTPSUCCESSBLOCK)success
                     failed:(MUHTTPFAILEDBLOCK)failed;
 
++ (void)getExhibitionsHomeWithLong:(CGFloat)lng
+                               lat:(CGFloat)lat
+                              page:(NSInteger)page
+                    exhibitionName:(NSString *)exhibitionName
+                      exhibitionId:(NSString *)exhibitionId
+                           success:(MUHTTPSUCCESSBLOCK)success
+                            failed:(MUHTTPFAILEDBLOCK)failed;
+
 /** 获取展馆介绍 */
 + (void)getHallIntroduceWithHallId:(NSString *)hallId
                            success:(MUHTTPSUCCESSBLOCK)success
                             failed:(MUHTTPFAILEDBLOCK)failed;
 
-/** 获取AR下载信息 */
+/** 获取AR下载信息(Vuforia) */
++ (void)getVuforiaDownloadInfoWithHallId:(NSString *)hallId
+                                     lng:(CGFloat)lng
+                                     lat:(CGFloat)lat
+                                 success:(MUHTTPSUCCESSBLOCK)success
+                                  failed:(MUHTTPFAILEDBLOCK)failed;
+
+/** 获取AR下载信息(EasyAR已过期) */
 + (void)getArDownLoadInfoWithHallId:(NSString *)hallId
                                 lng:(CGFloat)lng
                                 lat:(CGFloat)lat
@@ -184,6 +203,13 @@ typedef NS_ENUM(NSInteger, MUFOOTPRINTTYPE) {
                         sex:(NSString *)sex
                     success:(MUHTTPSUCCESSBLOCK)success
                      failed:(MUHTTPFAILEDBLOCK)failed;
+/** qq登录 */
++ (void)loginByQQOpenId:(NSString *)openId
+               photoUrl:(NSString *)photoUrl
+               nickName:(NSString *)nickName
+                    sex:(NSString *)sex
+                success:(MUHTTPSUCCESSBLOCK)success
+                 failed:(MUHTTPFAILEDBLOCK)failed;
 
 /** 用户名查重 */
 + (void)checkUsernameRepeat:(NSString *)username
@@ -245,11 +271,11 @@ typedef NS_ENUM(NSInteger, MUFOOTPRINTTYPE) {
                  failed:(MUHTTPFAILEDBLOCK)failed;
 
 /** 获取收藏列表 */
-+ (void)getCollectListSuccess:(MUHTTPSUCCESSBLOCK)success
-                       failed:(MUHTTPFAILEDBLOCK)failed;
++ (void)getCollectListType:(NSString *)type Success:(MUHTTPSUCCESSBLOCK)success
+                    failed:(MUHTTPFAILEDBLOCK)failed;
 
 /** 获取足迹列表 */
-+ (void)getFootPrintSuccess:(MUHTTPSUCCESSBLOCK)success
++ (void)getFootPrintType:(NSString *)type Success:(MUHTTPSUCCESSBLOCK)success
                      failed:(MUHTTPFAILEDBLOCK)failed;
 
 /** 获取我的评论 */

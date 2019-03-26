@@ -23,6 +23,8 @@
 @property (weak, nonatomic) IBOutlet UITextField *codeTextField;
 
 @property (weak, nonatomic) IBOutlet UIButton *submitBt;
+@property (weak, nonatomic) IBOutlet UIView *backGronud;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *backTop;
 
 /** 计时器 */
 @property (nonatomic , strong) NSTimer *timer;
@@ -36,13 +38,22 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    self.backTop.constant = SafeAreaTopHeight-44.0f;
     self.count = 0;
     
-    [self.returnBt setImageEdgeInsets:UIEdgeInsetsMake(5, 5, 5, 5)];
     self.submitBt.layer.masksToBounds = YES;
-    self.submitBt.layer.cornerRadius = 5.0f;
+    self.submitBt.layer.cornerRadius = 22.0f;
+    self.backGronud.layer.cornerRadius = 10.0;
+    self.backGronud.layer.shadowColor = [UIColor colorWithWhite:0.0 alpha:0.09].CGColor;//0.05
+    self.backGronud.layer.shadowOpacity = 10;
+    self.backGronud.layer.shadowOffset = CGSizeMake(0, 10);;
+    self.backGronud.layer.shadowRadius = 10;
+    self.backGronud.layer.shouldRasterize = NO;
+    self.backGronud.layer.shadowPath = [[UIBezierPath bezierPathWithRoundedRect:[self.backGronud bounds] cornerRadius:15] CGPath];
+    self.backGronud.layer.masksToBounds = NO;
     
     [self.sendMsgLb addTapTarget:self action:@selector(didSendMsgClicked:)];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardChange:) name:UIKeyboardWillChangeFrameNotification object:nil];
     
 }
 
@@ -69,21 +80,21 @@
 
 - (void)startCount {
     self.count = 60.0f;
-    self.sendMsgLb.text = [NSString stringWithFormat:@"%ld秒",self.count];
+    self.sendMsgLb.text = [NSString stringWithFormat:@"%ld秒后重新获取",self.count];
     self.timer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(timerReachedOneSec) userInfo:nil repeats:YES];
 }
 - (void)timerReachedOneSec {
     if (self.count <= 0) {
         [self.timer invalidate];
         self.timer = nil;
-        self.sendMsgLb.text = @"验证码";
+        self.sendMsgLb.text = @"获取验证码";
     }
     self.count--;
-    self.sendMsgLb.text = [NSString stringWithFormat:@"%ld秒",self.count];
+    self.sendMsgLb.text = [NSString stringWithFormat:@"%ld秒后重新获取",self.count];
     if (self.count == 0) {
         [self.timer invalidate];
         self.timer = nil;
-        self.sendMsgLb.text = @"验证码";
+        self.sendMsgLb.text = @"获取验证码";
     }
 }
 
@@ -104,10 +115,10 @@
         [self alertWithMsg:@"新密码不能为空" handler:nil];
         return;
     }
-    if (![newPwd isEqualToString:repeatPwd]) {
-        [self alertWithMsg:@"密码输入不一致" handler:nil];
-        return;
-    }
+//    if (![newPwd isEqualToString:repeatPwd]) {
+//        [self alertWithMsg:@"密码输入不一致" handler:nil];
+//        return;
+//    }
     if (![MUCustomUtils isValidateTelNumber:phone]) {
         [self alertWithMsg:@"电话号码格式不正确" handler:nil];
         return;
@@ -130,7 +141,22 @@
         [weakSelf alertWithMsg:kFailedTips handler:nil];
     }];
 }
-
+- (void)keyboardChange:(NSNotification *)note{
+    CGRect frame = [note.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+    CGFloat keyHeight =  [UIScreen mainScreen].bounds.size.height - frame.origin.y;
+    self.view.frame = CGRectMake(0, -keyHeight/5, SCREEN_WIDTH, SCREEN_HEIGHT);
+    [UIView animateWithDuration:0.25 animations:^{
+        [self.view layoutIfNeeded];
+    }];
+}
+- (void)dealloc {
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    if (self.timer != nil) {
+        [self.timer invalidate];
+        self.timer = nil;
+    }
+}
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     

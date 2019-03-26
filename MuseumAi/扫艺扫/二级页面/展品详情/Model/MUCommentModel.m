@@ -22,6 +22,7 @@
     comment.createDate = dic[@"createDate"];
     comment.count = [dic[@"count"] integerValue];
     comment.images = dic[@"pictureList"];
+    comment.authorAvatar = dic[@"photo"];
     
     return comment;
 }
@@ -51,7 +52,7 @@
 }
 
 - (CGFloat)commentTotalHeight {
-    CGFloat height = 62.0f;
+    CGFloat height = 64.0f;
     CGFloat contentHeight = [self contentHeight];
     if (contentHeight != 0) {
         height += 5.0f;

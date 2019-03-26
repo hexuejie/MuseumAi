@@ -13,6 +13,7 @@ typedef void(^LOVECLICKEDBLOCK)(void);
 
 @interface MUCommentCell : UITableViewCell
 
-- (void)bindCellWithModel:(MUCommentModel *)model loveClicked:(LOVECLICKEDBLOCK)loveBlock;
+- (void)bindCellWithModel:(MUCommentModel *)model;
+// loveClicked:(LOVECLICKEDBLOCK)loveBlock;
 
 @end

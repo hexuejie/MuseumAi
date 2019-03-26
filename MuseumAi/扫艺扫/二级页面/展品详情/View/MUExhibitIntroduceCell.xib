@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -18,44 +18,37 @@
                 <rect key="frame" x="0.0" y="0.0" width="375" height="199.5"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="简介_on" translatesAutoresizingMaskIntoConstraints="NO" id="wow-CU-fol">
-                        <rect key="frame" x="15" y="5" width="20" height="20"/>
-                        <constraints>
-                            <constraint firstAttribute="height" constant="20" id="XrP-bT-t6o"/>
-                            <constraint firstAttribute="width" constant="20" id="foo-EH-KaG"/>
-                        </constraints>
-                    </imageView>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="zVO-dv-5ur">
-                        <rect key="frame" x="0.0" y="30" width="375" height="5"/>
+                        <rect key="frame" x="0.0" y="40" width="375" height="10"/>
                         <color key="backgroundColor" red="0.89803921568627454" green="0.89803921568627454" blue="0.89803921568627454" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
-                            <constraint firstAttribute="height" constant="5" id="lkE-qW-YMN"/>
+                            <constraint firstAttribute="height" constant="10" id="lkE-qW-YMN"/>
                         </constraints>
                     </view>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pR6-0G-yct" customClass="YYLabel">
-                        <rect key="frame" x="15" y="40" width="350" height="149.5"/>
+                        <rect key="frame" x="15" y="55" width="350" height="134.5"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     </view>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="简介" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JKC-gV-OOY">
-                        <rect key="frame" x="40" y="5" width="325" height="20"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                        <rect key="frame" x="15" y="10" width="350" height="20"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="20" id="gLi-8L-08D"/>
+                        </constraints>
+                        <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                         <color key="textColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
                 </subviews>
                 <constraints>
+                    <constraint firstItem="JKC-gV-OOY" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="10" id="2wD-Bh-eRB"/>
                     <constraint firstItem="pR6-0G-yct" firstAttribute="top" secondItem="zVO-dv-5ur" secondAttribute="bottom" constant="5" id="3HJ-Ku-kg3"/>
                     <constraint firstItem="pR6-0G-yct" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="15" id="6BQ-sg-qUG"/>
                     <constraint firstAttribute="trailing" secondItem="pR6-0G-yct" secondAttribute="trailing" constant="10" id="8Ze-6q-a9U"/>
                     <constraint firstItem="zVO-dv-5ur" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="B2W-2H-qA4"/>
-                    <constraint firstItem="JKC-gV-OOY" firstAttribute="leading" secondItem="wow-CU-fol" secondAttribute="trailing" constant="5" id="Cjm-6c-CL0"/>
                     <constraint firstAttribute="trailing" secondItem="JKC-gV-OOY" secondAttribute="trailing" constant="10" id="IGm-B8-AnX"/>
-                    <constraint firstItem="zVO-dv-5ur" firstAttribute="top" secondItem="JKC-gV-OOY" secondAttribute="bottom" constant="5" id="NFz-VM-Ri0"/>
-                    <constraint firstItem="JKC-gV-OOY" firstAttribute="top" secondItem="wow-CU-fol" secondAttribute="top" id="Sax-ej-sko"/>
-                    <constraint firstItem="wow-CU-fol" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="5" id="Stk-73-zwp"/>
+                    <constraint firstItem="zVO-dv-5ur" firstAttribute="top" secondItem="JKC-gV-OOY" secondAttribute="bottom" constant="10" id="NFz-VM-Ri0"/>
                     <constraint firstAttribute="bottom" secondItem="pR6-0G-yct" secondAttribute="bottom" constant="10" id="aLT-my-coL"/>
-                    <constraint firstItem="JKC-gV-OOY" firstAttribute="bottom" secondItem="wow-CU-fol" secondAttribute="bottom" id="hKR-Yq-z5Y"/>
-                    <constraint firstItem="wow-CU-fol" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="15" id="o4G-w3-Mcp"/>
+                    <constraint firstItem="JKC-gV-OOY" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="15" id="pX8-xs-BYR"/>
                     <constraint firstAttribute="trailing" secondItem="zVO-dv-5ur" secondAttribute="trailing" id="wMA-yV-lzE"/>
                 </constraints>
             </tableViewCellContentView>
@@ -66,7 +59,4 @@
             <point key="canvasLocation" x="24.5" y="52"/>
         </tableViewCell>
     </objects>
-    <resources>
-        <image name="简介_on" width="50" height="50"/>
-    </resources>
 </document>

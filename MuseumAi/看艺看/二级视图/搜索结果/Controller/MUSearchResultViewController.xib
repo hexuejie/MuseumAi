@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="14460.31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.20"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MUSearchResultViewController">
             <connections>
+                <outlet property="navHeight" destination="vTk-ht-MO0" id="psy-VU-l3i"/>
                 <outlet property="resultTbView" destination="jnC-wu-72I" id="don-XM-Jq0"/>
                 <outlet property="returnBt" destination="3FG-59-Pqa" id="7vR-2d-et9"/>
                 <outlet property="topConstraint" destination="6M6-JT-qpv" id="tmh-Dk-SK8"/>
@@ -22,13 +23,20 @@
             <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1fK-H7-6cN">
+                    <rect key="frame" x="0.0" y="0.0" width="375" height="64"/>
+                    <color key="backgroundColor" red="0.95560306310653687" green="0.18413490056991577" blue="0.1844470202922821" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="64" id="vTk-ht-MO0"/>
+                    </constraints>
+                </view>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="搜索结果" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6Uf-h8-pkd">
-                    <rect key="frame" x="155" y="20" width="65.5" height="30"/>
+                    <rect key="frame" x="151" y="20" width="73.5" height="30"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="30" id="Brw-jd-LD0"/>
                     </constraints>
-                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                    <color key="textColor" red="0.20000000000000001" green="0.20000000000000001" blue="0.20000000000000001" alpha="1" colorSpace="calibratedRGB"/>
+                    <fontDescription key="fontDescription" type="system" weight="medium" pointSize="18"/>
+                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3FG-59-Pqa">
@@ -41,8 +49,8 @@
                         <action selector="didReturnClicked:" destination="-1" eventType="touchUpInside" id="ipw-mq-Nx4"/>
                     </connections>
                 </button>
-                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="jnC-wu-72I">
-                    <rect key="frame" x="0.0" y="55" width="375" height="612"/>
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="jnC-wu-72I">
+                    <rect key="frame" x="-16" y="120" width="375" height="603"/>
                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <connections>
                         <outlet property="dataSource" destination="-1" id="ARJ-WN-eV4"/>
@@ -52,19 +60,23 @@
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
             <constraints>
-                <constraint firstItem="jnC-wu-72I" firstAttribute="top" secondItem="6Uf-h8-pkd" secondAttribute="bottom" constant="5" id="0Dt-bm-QeD"/>
                 <constraint firstItem="jnC-wu-72I" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="4II-rs-5Ku"/>
                 <constraint firstItem="6Uf-h8-pkd" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" constant="20" id="6M6-JT-qpv"/>
                 <constraint firstAttribute="bottom" secondItem="jnC-wu-72I" secondAttribute="bottom" id="Amu-6q-cPt"/>
                 <constraint firstAttribute="trailing" secondItem="jnC-wu-72I" secondAttribute="trailing" id="Bfg-Tj-J7l"/>
                 <constraint firstItem="3FG-59-Pqa" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="15" id="CMf-jA-VkG"/>
+                <constraint firstItem="1fK-H7-6cN" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="Duj-oB-ba9"/>
+                <constraint firstItem="1fK-H7-6cN" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="OvF-g9-zjt"/>
                 <constraint firstItem="6Uf-h8-pkd" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="QFj-v8-CYC"/>
                 <constraint firstItem="6Uf-h8-pkd" firstAttribute="bottom" secondItem="3FG-59-Pqa" secondAttribute="bottom" id="brZ-XE-mJQ"/>
+                <constraint firstItem="jnC-wu-72I" firstAttribute="top" secondItem="1fK-H7-6cN" secondAttribute="bottom" id="j18-aR-x0r"/>
+                <constraint firstAttribute="trailing" secondItem="1fK-H7-6cN" secondAttribute="trailing" id="nQ2-Md-asH"/>
                 <constraint firstItem="6Uf-h8-pkd" firstAttribute="top" secondItem="3FG-59-Pqa" secondAttribute="top" id="uXX-ca-TTS"/>
             </constraints>
+            <point key="canvasLocation" x="-92" y="161"/>
         </view>
     </objects>
     <resources>
-        <image name="返回" width="40" height="40"/>
+        <image name="返回" width="23" height="16.5"/>
     </resources>
 </document>
